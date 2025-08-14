@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>万里千寻</title>
     <style>
         /* 基础样式重置 */
@@ -41,7 +41,7 @@
             padding: 20px;
         }
         
-        /* 顶部导航栏 */
+        /* 顶部导航栏 - 适配移动端 */
         .top-nav {
             position: absolute;
             top: 0;
@@ -50,16 +50,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 12px 15px;
             color: #fff;
             z-index: 10;
+        }
+        
+        .top-nav .left-nav {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none; /* 隐藏滚动条 */
+        }
+        
+        .top-nav .left-nav::-webkit-scrollbar {
+            display: none; /* 隐藏滚动条 */
         }
         
         .top-nav .left-nav a {
             color: #fff;
             text-decoration: none;
-            margin-right: 15px;
+            margin-right: 12px;
             font-size: 14px;
+            white-space: nowrap; /* 防止文字换行 */
             transition: color 0.3s;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
@@ -75,15 +87,16 @@
         }
         
         .top-nav .right-nav span {
-            margin-right: 15px;
+            margin-right: 12px;
             font-size: 14px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            display: none; /* 默认隐藏天气，小屏幕更简洁 */
         }
         
         .top-nav .right-nav a {
             color: #fff;
             text-decoration: none;
-            margin-right: 15px;
+            margin-right: 12px;
             font-size: 14px;
             transition: color 0.3s;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -105,7 +118,7 @@
         
         /* 时间显示LOGO样式 - 无遮罩，清晰显示 */
         .time-logo {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             text-align: center;
             padding: 10px;
             width: 100%;
@@ -128,7 +141,7 @@
         }
         
         .digital-clock {
-            font-size: 72px;
+            font-size: clamp(48px, 15vw, 72px); /* 响应式字体大小 */
             font-weight: bold;
             color: #ffffff;
             text-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
@@ -138,7 +151,7 @@
         }
         
         .date-info {
-            font-size: 22px;
+            font-size: clamp(18px, 5vw, 22px); /* 响应式字体大小 */
             color: #f0f0f0;
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
         }
@@ -148,7 +161,7 @@
             display: flex;
             width: 100%;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .search-box {
@@ -165,7 +178,7 @@
         
         /* 搜索引擎选择器 */
         .engine-selector {
-            padding: 0 15px;
+            padding: 0 12px;
             height: 100%;
             display: flex;
             align-items: center;
@@ -222,7 +235,7 @@
         /* 搜索输入框 */
         .search-input {
             flex: 1;
-            padding: 0 15px;
+            padding: 0 12px;
         }
         
         .search-input input {
@@ -235,7 +248,7 @@
         
         /* 搜索按钮 */
         .search-btn {
-            padding: 0 20px;
+            padding: 0 18px;
             height: 48px;
             border: none;
             border-radius: 0 24px 24px 0;
@@ -253,18 +266,28 @@
         
         /* AI功能入口 */
         .ai-features {
-            margin-top: 25px;
+            margin-top: 20px;
             font-size: 14px;
             color: #fff;
             text-align: center;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        
+        .ai-features::-webkit-scrollbar {
+            display: none;
         }
         
         .ai-features a {
             color: #fff;
             text-decoration: none;
-            margin: 0 10px;
+            margin: 0 8px;
+            white-space: nowrap;
             transition: all 0.3s;
+            display: inline-block;
         }
         
         .ai-features a:hover {
@@ -278,10 +301,10 @@
             left: 50%;
             transform: translateX(-50%);
             color: #fff;
-            font-size: 16px;
+            font-size: 14px;
             text-align: center;
             background-color: rgba(0, 0, 0, 0.3);
-            padding: 12px 20px;
+            padding: 10px 15px;
             border-radius: 8px;
             width: 90%;
             max-width: 600px;
@@ -296,7 +319,7 @@
             left: 0;
             width: 100%;
             background-color: rgba(255, 255, 255, 0.9);
-            padding: 12px 0;
+            padding: 10px 0;
             text-align: center;
             backdrop-filter: blur(5px);
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -305,9 +328,10 @@
         .bottom-nav a {
             color: #212121;
             text-decoration: none;
-            margin: 0 12px;
-            font-size: 14px;
+            margin: 0 8px;
+            font-size: 13px;
             transition: color 0.3s;
+            display: inline-block;
         }
         
         .bottom-nav a:hover {
@@ -318,19 +342,24 @@
         .bottom-text {
             margin-top: 5px;
             color: #666;
-            font-size: 12px;
+            font-size: 11px;
+            line-height: 1.4;
         }
         
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .digital-clock {
-                font-size: 48px;
+        /* 响应式调整 - 针对不同屏幕尺寸优化 */
+        @media (min-width: 768px) {
+            .top-nav .right-nav span {
+                display: inline-block; /* 大屏幕显示天气 */
             }
             
-            .date-info {
-                font-size: 18px;
+            .daily-quote {
+                font-size: 16px;
+                padding: 12px 20px;
+                bottom: 80px;
             }
-            
+        }
+        
+        @media (max-width: 480px) {
             .search-container {
                 flex-direction: column;
             }
@@ -347,14 +376,12 @@
             }
             
             .daily-quote {
-                font-size: 14px;
-                padding: 10px 15px;
                 bottom: 70px;
             }
             
             .bottom-nav a {
-                margin: 0 8px;
-                font-size: 13px;
+                margin: 0 6px;
+                font-size: 12px;
             }
         }
     </style>
@@ -384,9 +411,8 @@
     <div class="main-content">
         <!-- 核心：时间LOGO + 搜索框 -->
         <div class="logo-search">
-            <!-- 时间显示LOGO - 无遮罩，可点击跳转到百度 -->
+            <!-- 时间显示LOGO - 无遮罩，可点击跳转 -->
             <div class="time-logo">
-                <!-- 添加百度链接，target="_blank"确保在新标签页打开 -->
                 <a href="https://mtab.aloong.ddns-ip.net/" target="_blank" class="time-link">
                     <div class="digital-clock" id="digitalClock">00:00:00</div>
                     <div class="date-info" id="dateInfo">2023年1月1日 星期日</div>
@@ -481,10 +507,19 @@
             document.getElementById('dateInfo').textContent = `${year}年${month}月${day}日 ${weekDay}`;
         }
         
-        // 随机选择一张背景图
+        // 随机选择一张背景图 - 移动端优化图片加载
         function setRandomBackground() {
-            const randomIndex = Math.floor(Math.random() * backgroundImages.length);
-            document.body.style.backgroundImage = `url('${backgroundImages[randomIndex]}')`;
+            // 根据屏幕宽度选择合适的图片尺寸
+            const isMobile = window.innerWidth < 768;
+            const imageIndex = Math.floor(Math.random() * backgroundImages.length);
+            let imageUrl = backgroundImages[imageIndex];
+            
+            // 移动端使用较小尺寸图片，提高加载速度
+            if (isMobile) {
+                imageUrl = imageUrl.replace('1920/1080', '1080/1920');
+            }
+            
+            document.body.style.backgroundImage = `url('${imageUrl}')`;
         }
         
         // 初始化
@@ -494,6 +529,15 @@
             updateTime();
             // 每秒更新一次时间
             setInterval(updateTime, 1000);
+            
+            // 监听窗口大小变化，调整布局
+            window.addEventListener('resize', function() {
+                // 仅在窗口大小变化较大时才更换背景图
+                clearTimeout(this.resizeTimer);
+                this.resizeTimer = setTimeout(() => {
+                    setRandomBackground();
+                }, 500);
+            });
         }
         
         // 页面加载完成后初始化
@@ -566,6 +610,13 @@
                     }
                 }
             });
+            
+            // 移动端触摸优化 - 增加点击区域大小
+            if (window.innerWidth < 768) {
+                // 增大可点击区域
+                $('.engine-selector, .search-btn, .ai-features a, .top-nav a').css('touch-action', 'manipulation');
+                $('.search-btn').css('min-width', '80px');
+            }
         });
     </script>
 </body>
