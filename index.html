@@ -598,7 +598,7 @@
                     const location = region ? `${city},${region}` : city;
                     
                     // 备选天气API：使用高德地图API，更适合国内用户
-                    const amapKey = 'YOUR_AMAP_KEY'; // 请替换为您的高德地图API密钥
+                    const amapKey = '- 86f964462c85594889b69602d51b9858'; // 请替换为您的高德地图API密钥
                     const amapWeatherUrl = `https://restapi.amap.com/v3/weather/weatherInfo?city=${encodeURIComponent(city)}&key=${amapKey}&extensions=base`;
                     
                     return fetch(amapWeatherUrl)
@@ -647,7 +647,7 @@
                     console.log('位置获取失败:', error);
                     // 完全失败时显示默认天气
                     document.querySelector('.weather-icon').textContent = '🌤️';
-                    document.getElementById('weatherDisplay').textContent = '未知地区 晴 25°C';
+                    document.getElementById('weatherDisplay').textContent = '银河系 晴 25°C';
                 });
         }
         
