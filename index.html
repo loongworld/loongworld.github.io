@@ -270,11 +270,11 @@
         }
         
         .search-input input {
-            width: 100%;
+            width: 99%;
             border: none;
             outline: none;
-            font-size: 16px;
-            height: 50px;
+            font-size: 15px;
+            height: 51px;
             color: #2e7d32;
         }
         
@@ -421,7 +421,7 @@
             }
             
             .search-box {
-                border-radius: 26px;
+                border-radius: 25px;
                 width: 100%;
                 height: 54px; /* 手机上更大一点 */
             }
@@ -446,7 +446,7 @@
             
             /* 手机上搜索框内边距调整 */
             .engine-selector {
-                padding: 0 10px;
+                padding: 0 9px;
             }
             
             .search-input {
@@ -466,11 +466,11 @@
     <!-- 顶部导航 -->
     <div class="top-nav">
         <div class="left-nav">
-            <a href="https://bj.956668.xyz:1688">B</a>
+            <a href="https://bj.956668.xyz:1688" target="_blank">B</a>
             <a href="https://tv.956668.xyz:1688" target="_blank">T</a>
-            <a href="https://bt.956668.xyz:1688">B</a>
-            <a href="https://send.956668.xyz:1688">C</a>
-            <a href="https://lb.956668.xyz:1688">M</a>
+            <a href="https://bt.956668.xyz:1688" target="_blank">B</a>
+            <a href="https://send.956668.xyz:1688" target="_blank">C</a>
+            <a href="https://lb.956668.xyz:1688" target="_blank">M</a>
         </div>
         <div class="right-nav">
             <div class="weather-info">
@@ -479,7 +479,7 @@
                     <span class="weather-loading"></span>加载中...
                 </span>
             </div>
-            <a href="https://loongworlds.5ddd.com/login"target="_blank">•</a>
+            <a href="https://loongworlds.5ddd.com/login" target="_blank">•</a>
             <a href="https://sun.956668.xyz:1688" target="_blank">Sun</a>
         </div>
     </div>
@@ -525,10 +525,10 @@
 
         <!-- AI功能入口 -->
         <div class="ai-features">
-            <a href="#">AI生图</a>
-            <a href="#">AI写作</a>
-            <a href="#">AI PPT</a>
-            <a href="#">AI阅读</a>
+            <a href="#" target="_blank">AI生图</a>
+            <a href="#" target="_blank">AI写作</a>
+            <a href="#" target="_blank">AI PPT</a>
+            <a href="#" target="_blank">AI阅读</a>
         </div>
     </div>
 
@@ -543,10 +543,10 @@
     <!-- 底部导航栏 - 固定在最底部 -->
     <div class="bottom-nav">
         <div>
-            <a href="#">AAAA</a>
-            <a href="#">BBBB</a>
-            <a href="#">CCCC</a>
-            <a href="#">DDDD</a>
+            <a href="#" target="_blank">A</a>
+            <a href="#" target="_blank">B</a>
+            <a href="#" target="_blank">C</a>
+            <a href="#" target="_blank">D</a>
         </div>
         <div class="bottom-text">
             ICP备12345678号-1 意见反馈
@@ -598,7 +598,7 @@
                     const location = region ? `${city},${region}` : city;
                     
                     // 备选天气API：使用高德地图API，更适合国内用户
-                    const amapKey = '- 86f964462c85594889b69602d51b9858'; // 请替换为您的高德地图API密钥
+                    const amapKey = '86f964462c85594889b69602d51b9858'; // 请替换为您的高德地图API密钥
                     const amapWeatherUrl = `https://restapi.amap.com/v3/weather/weatherInfo?city=${encodeURIComponent(city)}&key=${amapKey}&extensions=base`;
                     
                     return fetch(amapWeatherUrl)
@@ -774,3 +774,4 @@
 </body>
 </html>
     
+
