@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清新淡绿笔记管理器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background-color: #f9fbf8;
+            padding: 20px;
+            position: relative;
+            /* 背景叶片装饰（半透明） */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath d='M0 0h20v20H0V0zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm20 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM10 37a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm10-17h20v20H20V20zm10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14z' fill='%23d9e7d4' fill-opacity='0.3' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        /* 容器装饰边框 */
+        .notebook-container {
+            max-width: 800px;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(129,178,154,0.2);
+            overflow: hidden;
+            border-top: 4px solid #6a994e; /* 顶部深绿装饰线 */
+            position: relative;
+        }
+        /* 头部渐变+图标装饰 */
+        .notebook-header {
+            background: linear-gradient(135deg, #81b29a 0%, #6a994e 100%);
+            color: #fff;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notebook-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .notebook-title::before {
+            content: "📝"; /* 笔记图标装饰 */
+            font-size: 22px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        /* 添加按钮（淡绿+白图标） */
+        .btn-add {
+            background-color: #f2f9f0;
+            color: #6a994e;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add:hover {
+            background-color: #e6f2e0;
+            transform: translateY(-1px);
+        }
+        .btn-add::before {
+            content: "+";
+            font-size: 18px;
+        }
+        /* 删除按钮（粉色系） */
+        .btn-delete {
+            background-color: #fad2d2;
+            color: #e74c3c;
+            padding: 5px 10px;
+            margin-left: 10px;
+            border-radius: 4px;
+        }
+        .btn-delete:hover {
+            background-color: #f8b4b4;
+        }
+        .notebook-content {
+            padding: 24px;
+            position: relative;
+        }
+        /* 新增笔记输入区（淡绿边框+装饰） */
+        .add-note-area {
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .add-note-area::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #81b29a, transparent);
+        }
+        #new-note-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #d9e7d4;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.6;
+            outline: none;
+            background-color: #fdfefe;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #new-note-input:focus {
+            border-color: #81b29a;
+            box-shadow: 0 0 0 3px rgba(129,178,154,0.15);
+        }
+        /* 笔记列表（彩色标签+hover效果） */
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .note-item {
+            padding: 16px;
+            background-color: #f4f9f2;
+            border: 1px solid #d9e7d4;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            padding-left: 24px;
+        }
+        .note-item::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 20px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            /* 随机淡彩标签（4种颜色循环） */
+        }
+        .note-item:nth-child(4n+1)::before { background-color: #81b29a; }
+        .note-item:nth-child(4n+2)::before { background-color: #e07a5f; }
+        .note-item:nth-child(4n+3)::before { background-color: #3d405b; }
+        .note-item:nth-child(4n+4)::before { background-color: #f2cc8f; }
+        .note-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(129,178,154,0.1);
+        }
+        .note-text {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+            line-height: 1.7;
+            word-break: break-all;
+        }
+        /* 空状态提示（带图标） */
+        .empty-tip {
+            text-align: center;
+            color: #999;
+            padding: 30px 20px;
+            font-size: 16px;
+        }
+        .empty-tip::before {
+            content: "🍃";
+            display: block;
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        /* 底部提示（淡绿文字） */
+        .save-tip {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #6a994e;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .save-tip::before {
+            content: "✅";
+        }
+    </style>
+</head>
+<body>
+    <div class="notebook-container">
+        <!-- 头部（标题+添加按钮） -->
+        <div class="notebook-header">
+            <div class="notebook-title">清新笔记</div>
+            <button class="btn btn-add" id="add-btn">添加新笔记</button>
+        </div>
+        <!-- 内容区（新增输入+笔记列表） -->
+        <div class="notebook-content">
+            <div class="add-note-area">
+                <textarea id="new-note-input" placeholder="写下你的想法吧～ 按Enter添加，Shift+Enter换行"></textarea>
+            </div>
+            <div class="notes-list" id="notes-list"></div>
+            <div class="save-tip">所有笔记自动保存，刷新/关闭后不丢失</div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const newNoteInput = document.getElementById('new-note-input');
+        const addBtn = document.getElementById('add-btn');
+        const notesList = document.getElementById('notes-list');
+
+        // 从本地存储加载笔记
+        function loadNotes() {
+            const savedNotes = JSON.parse(localStorage.getItem('freshGreenNotes') || '[]');
+            renderNotes(savedNotes);
+            return savedNotes;
+        }
+
+        // 渲染笔记列表
+        function renderNotes(notes) {
+            notesList.innerHTML = '';
+            if (notes.length === 0) {
+                notesList.innerHTML = '<div class="empty-tip">暂无笔记，添加第一条吧～</div>';
+                return;
+            }
+            // 遍历创建笔记项（带彩色标签）
+            notes.forEach((note, index) => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <div class="note-text">${note}</div>
+                    <button class="btn btn-delete" data-index="${index}">删除</button>
+                `;
+                notesList.appendChild(noteItem);
+            });
+            // 给删除按钮绑定事件
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', handleDelete);
+            });
+        }
+
+        // 添加新笔记
+        function addNote() {
+            const noteContent = newNoteInput.value.trim();
+            if (!noteContent) return; // 空内容不添加
+            const notes = loadNotes();
+            notes.unshift(noteContent); // 新笔记放最前面
+            localStorage.setItem('freshGreenNotes', JSON.stringify(notes));
+            renderNotes(notes);
+            newNoteInput.value = ''; // 清空输入框
+        }
+
+        // 删除笔记
+        function handleDelete(e) {
+            const index = parseInt(e.target.dataset.index);
+            const notes = loadNotes();
+            notes.splice(index, 1); // 删除对应索引的笔记
+            localStorage.setItem('freshGreenNotes', JSON.stringify(notes));
+            renderNotes(notes);
+        }
+
+        // 绑定事件
+        addBtn.addEventListener('click', addNote);
+        // Enter添加，Shift+Enter换行
+        newNoteInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addNote();
+            }
+        });
+
+        // 页面加载时初始化
+        window.addEventListener('load', loadNotes);
+    </script>
+</body>
+</html>
