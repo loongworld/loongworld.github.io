@@ -312,6 +312,7 @@
             
             // 初始化 - 检查本地存储的认证信息
             init() {
+                // 尝试从localStorage获取保存的令牌和Gist ID
                 const savedToken = localStorage.getItem('githubToken');
                 const savedGistId = localStorage.getItem('gistId');
                 
@@ -320,8 +321,9 @@
                     if (savedGistId) {
                         document.getElementById('gistId').value = savedGistId;
                     }
-                    // 自动登录
-                    this.authenticate(savedToken, savedGistId);
+                    
+                    // 自动登录，不显示提示
+                    this.authenticate(savedToken, savedGistId, true);
                 }
                 
                 // 设置当前年份
@@ -329,9 +331,9 @@
             }
             
             // 认证并连接到GitHub Gist
-            async authenticate(token, gistId = null) {
+            async authenticate(token, gistId = null, silent = false) {
                 if (!token) {
-                    this.showMessage('请输入GitHub个人访问令牌', 'error');
+                    if (!silent) this.showMessage('请输入GitHub个人访问令牌', 'error');
                     return;
                 }
                 
@@ -343,7 +345,7 @@
                     // 验证连接并加载笔记
                     await this.syncNotes();
                     
-                    // 保存认证信息到本地存储
+                    // 保存认证信息到localStorage，实现跨浏览器/设备需要手动输入相同令牌
                     localStorage.setItem('githubToken', token);
                     
                     // 如果有新的Gist ID，保存它
@@ -358,10 +360,12 @@
                     document.getElementById('noteInputSection').classList.remove('hidden');
                     document.getElementById('notesSection').classList.remove('hidden');
                     
-                    this.showMessage('成功连接到GitHub Gist', 'success');
+                    if (!silent) this.showMessage('成功连接到GitHub Gist', 'success');
                 } catch (error) {
-                    this.showMessage('认证失败: ' + error.message, 'error');
-                    console.error('认证错误:', error);
+                    if (!silent) {
+                        this.showMessage('认证失败: ' + error.message, 'error');
+                        console.error('认证错误:', error);
+                    }
                 } finally {
                     this.hideLoading();
                 }
@@ -457,7 +461,7 @@
                 });
             }
             
-            // 渲染笔记列表
+            // 渲染笔记列表 - 已优化自动换行
             renderNotes() {
                 const container = document.getElementById('notesContainer');
                 const emptyState = document.getElementById('emptyState');
@@ -476,7 +480,8 @@
                 
                 this.notes.forEach(note => {
                     const noteElement = document.createElement('div');
-                    noteElement.className = 'bg-white rounded-xl p-5 note-shadow note-hover border-l-4 border-green';
+                    // 增加了break-words类确保长文本自动换行
+                    noteElement.className = 'bg-white rounded-xl p-5 note-shadow note-hover border-l-4 border-green break-words';
                     noteElement.innerHTML = `
                         <div class="flex justify-between items-start mb-3">
                             <span class="text-sm text-gray-500">${this.formatDate(note.timestamp)}</span>
@@ -484,7 +489,8 @@
                                 <i class="fa fa-trash-o"></i>
                             </button>
                         </div>
-                        <p class="text-gray-800 whitespace-pre-wrap">${note.content}</p>
+                        <!-- 确保文本自动换行 -->
+                        <p class="text-gray-800 whitespace-pre-wrap break-words">${this.escapeHtml(note.content)}</p>
                     `;
                     container.appendChild(noteElement);
                 });
@@ -498,6 +504,16 @@
                         }
                     });
                 });
+            }
+            
+            // 转义HTML特殊字符，防止XSS并正确显示所有文本
+            escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
             
             // 更新笔记数量显示
