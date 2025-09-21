@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>绿叶记事本</title>
+    <title>绿叶云记事本</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
@@ -39,6 +39,13 @@
             .note-hover {
                 @apply transition-all duration-300 hover:shadow-lg;
             }
+            .loading {
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
         }
     </style>
 </head>
@@ -47,17 +54,57 @@
     <header class="bg-green-dark text-white py-6 px-4 shadow-md">
         <div class="container mx-auto">
             <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold flex items-center">
-                <i class="fa fa-leaf mr-3 animate-pulse"></i>
-                绿叶记事本
+                <i class="fa fa-github mr-3 animate-pulse"></i>
+                绿叶云记事本
             </h1>
-            <p class="text-green-light mt-1">记录生活的每一个瞬间</p>
+            <p class="text-green-light mt-1">基于GitHub Gist，多端同步你的笔记</p>
         </div>
     </header>
 
     <!-- 主内容区 -->
     <main class="container mx-auto px-4 py-8">
+        <!-- 认证区域 -->
+        <div id="authSection" class="bg-white rounded-xl p-6 mb-8 note-shadow">
+            <h2 class="text-xl font-semibold text-green-darker mb-4 flex items-center">
+                <i class="fa fa-user-circle-o mr-2"></i>GitHub 认证
+            </h2>
+            <p class="mb-4 text-gray-600">请输入你的GitHub个人访问令牌（Gist权限）和Gist ID来同步笔记</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="githubToken" class="block text-sm font-medium text-gray-700 mb-1">个人访问令牌</label>
+                    <input 
+                        type="password" 
+                        id="githubToken" 
+                        placeholder="ghp_..." 
+                        class="w-full p-3 border-2 border-green rounded-lg focus:outline-none focus:ring-2 focus:ring-green-dark transition-all"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">需要创建具有gist权限的令牌 <a href="https://github.com/settings/tokens/new?scopes=gist" target="_blank" class="text-green-darker underline">点击创建</a></p>
+                </div>
+                
+                <div>
+                    <label for="gistId" class="block text-sm font-medium text-gray-700 mb-1">Gist ID (可选)</label>
+                    <input 
+                        type="text" 
+                        id="gistId" 
+                        placeholder="如果没有将自动创建" 
+                        class="w-full p-3 border-2 border-green rounded-lg focus:outline-none focus:ring-2 focus:ring-green-dark transition-all"
+                    >
+                </div>
+                
+                <button 
+                    id="authBtn" 
+                    class="w-full bg-green text-green-darker font-medium px-6 py-3 rounded-lg btn-hover flex items-center justify-center">
+                    <i class="fa fa-sign-in mr-2"></i>连接到GitHub
+                </button>
+            </div>
+        </div>
+        
+        <!-- 状态提示区 -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg"></div>
+        
         <!-- 添加笔记区域 -->
-        <div class="bg-white rounded-xl p-6 mb-8 note-shadow">
+        <div id="noteInputSection" class="bg-white rounded-xl p-6 mb-8 note-shadow hidden">
             <h2 class="text-xl font-semibold text-green-darker mb-4 flex items-center">
                 <i class="fa fa-pencil-square-o mr-2"></i>添加新笔记
             </h2>
@@ -76,15 +123,35 @@
         </div>
 
         <!-- 笔记列表区域 -->
-        <div>
-            <h2 class="text-xl font-semibold text-green-darker mb-4 flex items-center">
-                <i class="fa fa-list-alt mr-2"></i>我的笔记
-                <span id="noteCount" class="ml-2 bg-green text-green-darker rounded-full px-3 py-1 text-sm font-medium">0 条笔记</span>
-            </h2>
+        <div id="notesSection" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-green-darker flex items-center">
+                    <i class="fa fa-list-alt mr-2"></i>我的笔记
+                    <span id="noteCount" class="ml-2 bg-green text-green-darker rounded-full px-3 py-1 text-sm font-medium">0 条笔记</span>
+                </h2>
+                <div class="flex space-x-2">
+                    <button 
+                        id="syncBtn" 
+                        class="text-green-darker hover:text-green-dark flex items-center btn-hover">
+                        <i class="fa fa-refresh mr-1"></i> 同步
+                    </button>
+                    <button 
+                        id="logoutBtn" 
+                        class="text-gray-600 hover:text-red-500 flex items-center btn-hover">
+                        <i class="fa fa-sign-out mr-1"></i> 退出
+                    </button>
+                </div>
+            </div>
             
             <div id="notesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- 笔记将通过JavaScript动态添加到这里 -->
-                <div class="col-span-full text-center py-12 text-gray-500">
+                <!-- 加载状态 -->
+                <div id="loadingIndicator" class="col-span-full text-center py-12 hidden">
+                    <i class="fa fa-circle-o-notch loading text-5xl text-green"></i>
+                    <p class="mt-4 text-green-darker">正在同步笔记...</p>
+                </div>
+                
+                <!-- 初始状态 -->
+                <div id="emptyState" class="col-span-full text-center py-12 text-gray-500">
                     <i class="fa fa-sticky-note-o text-5xl mb-4 text-green/50"></i>
                     <p>还没有笔记，开始添加你的第一条笔记吧！</p>
                 </div>
@@ -95,57 +162,287 @@
     <!-- 页脚 -->
     <footer class="bg-green-darker text-white py-6 mt-12">
         <div class="container mx-auto px-4 text-center">
-            <p>绿叶记事本 &copy; <span id="currentYear"></span></p>
-            <p class="text-sm mt-1 text-green-light">数据自动保存，多端同步</p>
+            <p>绿叶云记事本 &copy; <span id="currentYear"></span></p>
+            <p class="text-sm mt-1 text-green-light">数据存储在GitHub Gist，多设备同步访问</p>
         </div>
     </footer>
 
     <script>
-        // 笔记数据管理
-        class NoteManager {
-            constructor() {
-                this.notes = [];
-                this.loadNotes();
-                this.renderNotes();
-                this.updateNoteCount();
+        // GitHub Gist API服务
+        class GistNoteService {
+            constructor(token, gistId = null) {
+                this.token = token;
+                this.gistId = gistId;
+                this.filename = 'notes.json'; // 存储笔记的文件名
             }
             
-            // 从localStorage加载笔记（实际项目中可替换为API请求）
-            loadNotes() {
-                const savedNotes = localStorage.getItem('greenNotes');
-                if (savedNotes) {
-                    this.notes = JSON.parse(savedNotes);
+            // 获取所有笔记
+            async getAllNotes() {
+                try {
+                    // 如果没有Gist ID，尝试获取已存在的笔记Gist
+                    if (!this.gistId) {
+                        const gists = await this._fetch('https://api.github.com/gists');
+                        const noteGist = gists.find(gist => this.filename in gist.files);
+                        
+                        if (noteGist) {
+                            this.gistId = noteGist.id;
+                        } else {
+                            // 没有找到现有Gist，创建一个新的
+                            return await this._createNewGist();
+                        }
+                    }
+                    
+                    // 获取指定Gist
+                    const gist = await this._fetch(`https://api.github.com/gists/${this.gistId}`);
+                    
+                    // 检查文件是否存在
+                    if (!(this.filename in gist.files)) {
+                        return await this._updateGist([]);
+                    }
+                    
+                    // 解析笔记内容
+                    const content = await fetch(gist.files[this.filename].raw_url).then(res => res.text());
+                    return JSON.parse(content) || [];
+                } catch (error) {
+                    console.error('获取笔记出错:', error);
+                    throw error;
                 }
             }
             
-            // 保存笔记到localStorage（实际项目中可替换为API请求）
-            saveNotes() {
-                localStorage.setItem('greenNotes', JSON.stringify(this.notes));
-            }
-            
             // 添加新笔记
-            addNote(content) {
-                if (!content.trim()) return false;
-                
-                const newNote = {
-                    id: Date.now().toString(),
-                    content: content,
-                    timestamp: new Date().toISOString()
-                };
-                
-                this.notes.unshift(newNote); // 添加到数组开头
-                this.saveNotes();
-                this.renderNotes();
-                this.updateNoteCount();
-                return true;
+            async addNote(content) {
+                try {
+                    const notes = await this.getAllNotes();
+                    
+                    const newNote = {
+                        id: Date.now().toString(),
+                        content: content,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    notes.unshift(newNote); // 添加到数组开头
+                    await this._updateGist(notes);
+                    return newNote;
+                } catch (error) {
+                    console.error('添加笔记出错:', error);
+                    throw error;
+                }
             }
             
             // 删除笔记
-            deleteNote(id) {
-                this.notes = this.notes.filter(note => note.id !== id);
-                this.saveNotes();
-                this.renderNotes();
-                this.updateNoteCount();
+            async deleteNote(id) {
+                try {
+                    let notes = await this.getAllNotes();
+                    notes = notes.filter(note => note.id !== id);
+                    await this._updateGist(notes);
+                    return true;
+                } catch (error) {
+                    console.error('删除笔记出错:', error);
+                    throw error;
+                }
+            }
+            
+            // 创建新的Gist
+            async _createNewGist() {
+                const response = await this._fetch('https://api.github.com/gists', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        description: '绿叶云记事本数据',
+                        public: false,
+                        files: {
+                            [this.filename]: {
+                                content: '[]'
+                            }
+                        }
+                    })
+                });
+                
+                this.gistId = response.id;
+                return [];
+            }
+            
+            // 更新Gist内容
+            async _updateGist(notes) {
+                return await this._fetch(`https://api.github.com/gists/${this.gistId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        files: {
+                            [this.filename]: {
+                                content: JSON.stringify(notes, null, 2)
+                            }
+                        }
+                    })
+                });
+            }
+            
+            // 通用fetch方法
+            async _fetch(url, options = {}) {
+                const headers = {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Authorization': `token ${this.token}`,
+                    ...options.headers
+                };
+                
+                const response = await fetch(url, {
+                    ...options,
+                    headers
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.message || `HTTP错误: ${response.status}`);
+                }
+                
+                return await response.json();
+            }
+            
+            // 获取当前Gist ID
+            getGistId() {
+                return this.gistId;
+            }
+        }
+
+        // 笔记管理器
+        class NoteManager {
+            constructor() {
+                this.gistService = null;
+                this.notes = [];
+                this.init();
+            }
+            
+            // 初始化 - 检查本地存储的认证信息
+            init() {
+                const savedToken = localStorage.getItem('githubToken');
+                const savedGistId = localStorage.getItem('gistId');
+                
+                if (savedToken) {
+                    document.getElementById('githubToken').value = savedToken;
+                    if (savedGistId) {
+                        document.getElementById('gistId').value = savedGistId;
+                    }
+                    // 自动登录
+                    this.authenticate(savedToken, savedGistId);
+                }
+                
+                // 设置当前年份
+                document.getElementById('currentYear').textContent = new Date().getFullYear();
+            }
+            
+            // 认证并连接到GitHub Gist
+            async authenticate(token, gistId = null) {
+                if (!token) {
+                    this.showMessage('请输入GitHub个人访问令牌', 'error');
+                    return;
+                }
+                
+                this.showLoading();
+                try {
+                    // 创建Gist服务实例
+                    this.gistService = new GistNoteService(token, gistId);
+                    
+                    // 验证连接并加载笔记
+                    await this.syncNotes();
+                    
+                    // 保存认证信息到本地存储
+                    localStorage.setItem('githubToken', token);
+                    
+                    // 如果有新的Gist ID，保存它
+                    const newGistId = this.gistService.getGistId();
+                    if (newGistId) {
+                        localStorage.setItem('gistId', newGistId);
+                        document.getElementById('gistId').value = newGistId;
+                    }
+                    
+                    // 显示笔记区域，隐藏认证区域
+                    document.getElementById('authSection').classList.add('hidden');
+                    document.getElementById('noteInputSection').classList.remove('hidden');
+                    document.getElementById('notesSection').classList.remove('hidden');
+                    
+                    this.showMessage('成功连接到GitHub Gist', 'success');
+                } catch (error) {
+                    this.showMessage('认证失败: ' + error.message, 'error');
+                    console.error('认证错误:', error);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            // 同步笔记（从Gist获取最新数据）
+            async syncNotes() {
+                if (!this.gistService) return;
+                
+                this.showLoading();
+                try {
+                    this.notes = await this.gistService.getAllNotes();
+                    this.renderNotes();
+                    this.updateNoteCount();
+                    this.showMessage('笔记已同步', 'success');
+                } catch (error) {
+                    this.showMessage('同步失败: ' + error.message, 'error');
+                    throw error;
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            // 添加新笔记
+            async addNote(content) {
+                if (!this.gistService || !content.trim()) return false;
+                
+                this.showLoading();
+                try {
+                    const newNote = await this.gistService.addNote(content);
+                    this.notes.unshift(newNote); // 添加到数组开头
+                    this.renderNotes();
+                    this.updateNoteCount();
+                    this.showMessage('笔记添加成功', 'success');
+                    return true;
+                } catch (error) {
+                    this.showMessage('添加失败: ' + error.message, 'error');
+                    return false;
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            // 删除笔记
+            async deleteNote(id) {
+                if (!this.gistService) return;
+                
+                this.showLoading();
+                try {
+                    await this.gistService.deleteNote(id);
+                    this.notes = this.notes.filter(note => note.id !== id);
+                    this.renderNotes();
+                    this.updateNoteCount();
+                    this.showMessage('笔记已删除', 'success');
+                } catch (error) {
+                    this.showMessage('删除失败: ' + error.message, 'error');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            // 退出登录
+            logout() {
+                // 清除本地存储的认证信息
+                localStorage.removeItem('githubToken');
+                localStorage.removeItem('gistId');
+                
+                // 重置状态
+                this.gistService = null;
+                this.notes = [];
+                
+                // 显示认证区域，隐藏笔记区域
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('noteInputSection').classList.add('hidden');
+                document.getElementById('notesSection').classList.add('hidden');
+                
+                // 清空输入框
+                document.getElementById('githubToken').value = '';
+                document.getElementById('gistId').value = '';
+                
+                this.showMessage('已退出登录', 'info');
             }
             
             // 格式化时间显示
@@ -163,18 +460,19 @@
             // 渲染笔记列表
             renderNotes() {
                 const container = document.getElementById('notesContainer');
+                const emptyState = document.getElementById('emptyState');
+                
+                // 清除现有笔记（保留加载指示器和空状态）
+                Array.from(container.children).forEach(child => {
+                    if (!child.id) container.removeChild(child);
+                });
                 
                 if (this.notes.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full text-center py-12 text-gray-500">
-                            <i class="fa fa-sticky-note-o text-5xl mb-4 text-green/50"></i>
-                            <p>还没有笔记，开始添加你的第一条笔记吧！</p>
-                        </div>
-                    `;
+                    emptyState.classList.remove('hidden');
                     return;
                 }
                 
-                container.innerHTML = '';
+                emptyState.classList.add('hidden');
                 
                 this.notes.forEach(note => {
                     const noteElement = document.createElement('div');
@@ -207,33 +505,59 @@
                 const countElement = document.getElementById('noteCount');
                 countElement.textContent = `${this.notes.length} 条笔记`;
             }
+            
+            // 显示加载状态
+            showLoading() {
+                document.getElementById('loadingIndicator').classList.remove('hidden');
+                document.getElementById('emptyState').classList.add('hidden');
+            }
+            
+            // 隐藏加载状态
+            hideLoading() {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }
+            
+            // 显示状态消息
+            showMessage(text, type = 'info') {
+                const messageElement = document.getElementById('statusMessage');
+                messageElement.textContent = text;
+                messageElement.classList.remove('hidden', 'bg-green', 'bg-red-100', 'bg-blue-100', 'text-green-darker', 'text-red-700', 'text-blue-700', 'border-green-dark', 'border-red-300', 'border-blue-300');
+                
+                if (type === 'success') {
+                    messageElement.classList.add('bg-green', 'text-green-darker', 'border-l-4', 'border-green-dark');
+                } else if (type === 'error') {
+                    messageElement.classList.add('bg-red-100', 'text-red-700', 'border-l-4', 'border-red-300');
+                } else {
+                    messageElement.classList.add('bg-blue-100', 'text-blue-700', 'border-l-4', 'border-blue-300');
+                }
+                
+                // 3秒后自动隐藏消息
+                setTimeout(() => {
+                    messageElement.classList.add('hidden');
+                }, 3000);
+            }
         }
         
         // 初始化应用
         document.addEventListener('DOMContentLoaded', () => {
-            // 设置当前年份
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-            
-            // 初始化笔记管理器
+            // 创建笔记管理器实例
             const noteManager = new NoteManager();
+            
+            // 认证按钮事件
+            document.getElementById('authBtn').addEventListener('click', () => {
+                const token = document.getElementById('githubToken').value;
+                const gistId = document.getElementById('gistId').value;
+                noteManager.authenticate(token, gistId);
+            });
             
             // 添加笔记按钮事件
             const addBtn = document.getElementById('addNoteBtn');
             const noteInput = document.getElementById('noteInput');
             
-            addBtn.addEventListener('click', () => {
+            addBtn.addEventListener('click', async () => {
                 const content = noteInput.value;
-                if (noteManager.addNote(content)) {
+                if (await noteManager.addNote(content)) {
                     noteInput.value = '';
-                    
-                    // 添加成功提示动画
-                    addBtn.classList.add('bg-green-dark', 'text-white');
-                    addBtn.innerHTML = '<i class="fa fa-check mr-2"></i>添加成功';
-                    
-                    setTimeout(() => {
-                        addBtn.classList.remove('bg-green-dark', 'text-white');
-                        addBtn.innerHTML = '<i class="fa fa-plus mr-2"></i>保存笔记';
-                    }, 1500);
                 }
             });
             
@@ -243,6 +567,20 @@
                     e.preventDefault();
                     addBtn.click();
                 }
+            });
+            
+            // 同步按钮事件
+            document.getElementById('syncBtn').addEventListener('click', async () => {
+                try {
+                    await noteManager.syncNotes();
+                } catch (error) {
+                    // 错误处理已在syncNotes中完成
+                }
+            });
+            
+            // 退出按钮事件
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                noteManager.logout();
             });
         });
     </script>
