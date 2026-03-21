@@ -66,39 +66,6 @@
             gap: 10px;
         }
         
-        /* 真人跳舞美女 - 右下角 */
-        .dancing-girl {
-            position: fixed;
-            bottom: 20px;
-            right: 30px;
-            width: 200px;
-            height: 280px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            background: rgba(0,0,0,0.2);
-        }
-        
-        .dancing-girl video,
-        .dancing-girl img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .girl-label {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            white-space: nowrap;
-        }
-        
         /* 时间日期 */
         .datetime-container {
             text-align: center;
@@ -241,7 +208,6 @@
             .time { font-size: 52px; }
             .date { font-size: 14px; }
             .weather-info { top: 10px; left: 10px; padding: 10px 14px; min-width: 140px; }
-            .dancing-girl { width: 140px; height: 200px; right: 10px; bottom: 10px; }
             .search-box { max-width: 90%; padding: 6px; }
             .search-box input { padding: 14px 50px 14px 20px; font-size: 15px; }
             .search-box button { width: 40px; height: 40px; font-size: 18px; }
@@ -262,16 +228,9 @@
         </div>
     </div>
     
-    <!-- 真人跳舞美女 - 右下角 -->
-    <div class="dancing-girl">
-        <!-- 使用真实的跳舞 GIF -->
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXNxeWNxeG8xeG8xeG8xeG8xeG8xeG8xeG8xeG8xeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13Coqzp7sxaZx6/giphy.gif" alt="Dancing Girl" id="dancingGirl">
-        <div class="girl-label">💃 休息一下~</div>
-    </div>
-    
     <!-- 时间日期 -->
     <div class="datetime-container">
-        <div class="datetime" id="datetime" onclick="handleTimeClick()" title="点击打开综合导航">
+        <div class="datetime" id="datetime" onclick="handleTimeClick()" title="点击打开综合导航目录">
             <div class="time" id="time">00:00:00</div>
             <div class="date" id="date">加载中...</div>
         </div>
@@ -312,14 +271,14 @@
         setInterval(updateTime, 1000);
         updateTime();
         
-        // 点击时间跳转
+        // 点击时间跳转 - 打开本地综合导航目录
         function handleTimeClick() {
             const dt = document.getElementById('datetime');
             dt.classList.add('clicked');
             
             // 0.5 秒后打开链接
             setTimeout(() => {
-                window.open('https://quote.eastmoney.com/central/', '_blank');
+                window.open('central/', '_blank');
             }, 300);
             
             // 1.5 秒后恢复
