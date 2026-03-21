@@ -25,91 +25,125 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
             backdrop-filter: blur(10px);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 14px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            max-width: 200px;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            min-width: 180px;
         }
         
         .weather-location {
-            font-size: 12px;
-            opacity: 0.9;
+            font-size: 13px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         
         .weather-detail {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
-        .weather-icon { font-size: 18px; }
-        .weather-temp { font-weight: 600; }
-        .weather-desc { font-size: 12px; opacity: 0.8; }
+        .weather-icon { 
+            font-size: 24px; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+        .weather-temp { 
+            font-weight: 700; 
+            font-size: 20px;
+        }
+        .weather-more {
+            font-size: 12px;
+            opacity: 0.85;
+            display: flex;
+            gap: 10px;
+        }
         
-        /* 跳舞美女 - 右下角 */
+        /* 真人跳舞美女 - 右下角 */
         .dancing-girl {
             position: fixed;
-            bottom: 0;
-            right: 80px;
-            width: 180px;
-            height: 320px;
-            pointer-events: none;
-            z-index: 100;
+            bottom: 20px;
+            right: 30px;
+            width: 200px;
+            height: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.2);
         }
         
+        .dancing-girl video,
         .dancing-girl img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            animation: dance 2s ease-in-out infinite;
         }
         
-        @keyframes dance {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(2deg); }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(-10px) rotate(-2deg); }
+        .girl-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            white-space: nowrap;
         }
         
         /* 时间日期 */
-        .datetime {
+        .datetime-container {
             text-align: center;
             margin-bottom: 40px;
+        }
+        
+        .datetime {
+            display: inline-block;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            padding: 20px 40px;
+            border-radius: 20px;
         }
         
         .datetime:hover {
+            background: rgba(255,255,255,0.1);
             transform: scale(1.05);
         }
         
-        .datetime.active {
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        .datetime:active,
+        .datetime.clicked {
+            transform: scale(0.98);
+        }
+        
+        .datetime.clicked .time {
+            font-weight: 900;
+            text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.6);
+            letter-spacing: 6px;
         }
         
         .time {
-            font-size: 72px;
+            font-size: 78px;
             font-weight: 200;
             letter-spacing: 4px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            transition: all 0.3s;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            line-height: 1;
         }
         
         .date {
             font-size: 18px;
-            opacity: 0.9;
-            margin-top: 10px;
+            opacity: 0.95;
+            margin-top: 12px;
             letter-spacing: 2px;
+            font-weight: 400;
         }
         
         /* 搜索框 */
@@ -117,103 +151,130 @@
             position: relative;
             background: white;
             border-radius: 50px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 12px 50px rgba(0,0,0,0.35);
             width: 100%;
-            max-width: 550px;
-            padding: 6px;
+            max-width: 580px;
+            padding: 8px;
             margin: 0 20px;
         }
         
         .search-box input {
             width: 100%;
-            padding: 16px 60px 16px 25px;
+            padding: 18px 70px 18px 28px;
             border: none;
             font-size: 16px;
             outline: none;
             border-radius: 50px;
+            background: #fafafa;
+        }
+        
+        .search-box input:focus {
+            background: white;
         }
         
         .search-box button {
             position: absolute;
-            right: 8px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            width: 42px;
-            height: 42px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
         }
         
         .search-box button:hover {
-            transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            transform: translateY(-50%) scale(1.12) rotate(-10deg);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
         }
         
         /* 搜索引擎切换 */
         .engine-tabs {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
+            gap: 10px;
+            margin-top: 25px;
             flex-wrap: wrap;
         }
         
         .engine-tab {
-            padding: 6px 14px;
+            padding: 8px 18px;
             background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
             color: white;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 500;
             transition: all 0.3s;
+            backdrop-filter: blur(5px);
         }
         
-        .engine-tab:hover, .engine-tab.active {
+        .engine-tab:hover {
+            background: rgba(255,255,255,0.35);
+            transform: translateY(-2px);
+        }
+        
+        .engine-tab.active {
             background: rgba(255,255,255,0.4);
+            border-color: white;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.3);
         }
         
         /* 底部 */
         .footer {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 12px;
-            opacity: 0.7;
+            opacity: 0.6;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
-            .time { font-size: 48px; }
+            .time { font-size: 52px; }
             .date { font-size: 14px; }
-            .weather-info { top: 10px; left: 10px; padding: 8px 12px; }
-            .dancing-girl { width: 120px; height: 220px; right: 20px; }
-            .search-box { max-width: 90%; }
+            .weather-info { top: 10px; left: 10px; padding: 10px 14px; min-width: 140px; }
+            .dancing-girl { width: 140px; height: 200px; right: 10px; bottom: 10px; }
+            .search-box { max-width: 90%; padding: 6px; }
+            .search-box input { padding: 14px 50px 14px 20px; font-size: 15px; }
+            .search-box button { width: 40px; height: 40px; font-size: 18px; }
         }
     </style>
 </head>
 <body>
     <!-- 天气信息 - 左上角 -->
     <div class="weather-info" id="weatherInfo">
-        <div class="weather-location">📍 加载中...</div>
+        <div class="weather-location">📍 获取位置中...</div>
         <div class="weather-detail">
-            <span class="weather-icon">🌤️</span>
+            <span class="weather-icon">🌡️</span>
             <span class="weather-temp">--°C</span>
         </div>
-        <div class="weather-desc">--</div>
+        <div class="weather-more">
+            <span id="weatherDesc">--</span>
+            <span id="weatherWind">💨 --km/h</span>
+        </div>
     </div>
     
-    <!-- 跳舞美女 - 右下角 -->
+    <!-- 真人跳舞美女 - 右下角 -->
     <div class="dancing-girl">
-        <img src="https://api.dicebear.com/9.x/notionists/svg?seed=girl&backgroundColor=ffdfbf" alt="Dancing Girl" id="dancingGirl">
+        <!-- 使用真实的跳舞 GIF -->
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXNxeWNxeG8xeG8xeG8xeG8xeG8xeG8xeG8xeG8xeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13Coqzp7sxaZx6/giphy.gif" alt="Dancing Girl" id="dancingGirl">
+        <div class="girl-label">💃 休息一下~</div>
     </div>
     
-    <!-- 时间日期 - 可点击跳转到综合导航 -->
-    <div class="datetime" id="datetime" onclick="toggleTimeStyle(); window.open('https://quote.eastmoney.com/central/', '_blank')" title="点击打开综合导航">
-        <div class="time" id="time">00:00:00</div>
-        <div class="date" id="date">加载中...</div>
+    <!-- 时间日期 -->
+    <div class="datetime-container">
+        <div class="datetime" id="datetime" onclick="handleTimeClick()" title="点击打开综合导航">
+            <div class="time" id="time">00:00:00</div>
+            <div class="date" id="date">加载中...</div>
+        </div>
     </div>
     
     <!-- 搜索框 -->
@@ -232,11 +293,11 @@
     
     <!-- 底部 -->
     <div class="footer">
-        🌹 万里千寻 - 龙哥的起始页
+        🌹 万里千寻 - 龙哥的起始页 · 2026
     </div>
     
     <script>
-        // 时间
+        // ===== 时间功能 =====
         function updateTime() {
             const now = new Date();
             document.getElementById('time').textContent = 
@@ -251,15 +312,23 @@
         setInterval(updateTime, 1000);
         updateTime();
         
-        // 点击时间变粗
-        function toggleTimeStyle() {
-            document.getElementById('datetime').classList.add('active');
+        // 点击时间跳转
+        function handleTimeClick() {
+            const dt = document.getElementById('datetime');
+            dt.classList.add('clicked');
+            
+            // 0.5 秒后打开链接
             setTimeout(() => {
-                document.getElementById('datetime').classList.remove('active');
+                window.open('https://quote.eastmoney.com/central/', '_blank');
             }, 300);
+            
+            // 1.5 秒后恢复
+            setTimeout(() => {
+                dt.classList.remove('clicked');
+            }, 1500);
         }
         
-        // 搜索
+        // ===== 搜索功能 =====
         const engines = {
             baidu: {url: 'https://www.baidu.com/s?wd=', placeholder: '百度一下，你就知道'},
             google: {url: 'https://www.google.com/search?q=', placeholder: 'Search the world'},
@@ -281,29 +350,38 @@
             if(q) window.open(engines[currentEngine].url + encodeURIComponent(q), '_blank');
         }
         
-        // 天气 + IP 地理位置
+        // ===== 天气 + 地理位置 =====
         async function fetchWeatherAndLocation() {
             try {
-                // 获取 IP 和位置
-                const ipRes = await fetch('https://api.ipapi.com/api/check?access_key=demo');
+                // 第一步：获取 IP 位置信息
+                const ipRes = await fetch('https://ipapi.co/json/');
+                if(!ipRes.ok) throw new Error('IP API failed');
                 const ipData = await ipRes.json();
                 
-                // 使用免费 API 获取位置
-                const locationRes = await fetch('https://ipapi.co/json/');
-                const locationData = await locationRes.json();
+                const city = ipData.city || '北京';
+                const region = ipData.region || '北京';
+                const lat = ipData.latitude || 39.9042;
+                const lon = ipData.longitude || 116.4074;
                 
-                const city = locationData.city || '北京';
-                const region = locationData.region || '北京';
-                const country = locationData.country_name || '中国';
-                
-                // 获取天气
-                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${locationData.latitude||39.9}&longitude=${locationData.longitude||116.4}&current_weather=true`);
+                // 第二步：获取天气
+                const weatherRes = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
+                );
+                if(!weatherRes.ok) throw new Error('Weather API failed');
                 const weatherData = await weatherRes.json();
                 
                 if(weatherData.current_weather) {
                     const w = weatherData.current_weather;
-                    const icons = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
-                    const icon = icons[w.weathercode] || '🌤️';
+                    const icons = {
+                        0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
+                        45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'],
+                        51: ['🌦️', '毛毛雨'], 53: ['🌦️', '中雨'], 55: ['🌦️', '大雨'],
+                        61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
+                        71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'],
+                        80: ['🌦️', '阵雨'], 81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'],
+                        95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
+                    };
+                    const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
                     
                     document.getElementById('weatherInfo').innerHTML = `
                         <div class="weather-location">📍 ${city}, ${region}</div>
@@ -311,24 +389,33 @@
                             <span class="weather-icon">${icon}</span>
                             <span class="weather-temp">${w.temperature}°C</span>
                         </div>
-                        <div class="weather-desc">风速 ${w.windspeed}km/h</div>
+                        <div class="weather-more">
+                            <span>${desc}</span>
+                            <span>💨 ${w.windspeed}km/h</span>
+                        </div>
                     `;
                 }
             } catch(e) {
-                // 默认显示北京
+                // 默认显示北京天气
                 document.getElementById('weatherInfo').innerHTML = `
-                    <div class="weather-location">📍 北京</div>
+                    <div class="weather-location">📍 北京市</div>
                     <div class="weather-detail">
                         <span class="weather-icon">🌤️</span>
                         <span class="weather-temp">--°C</span>
                     </div>
-                    <div class="weather-desc">获取中...</div>
+                    <div class="weather-more">
+                        <span>获取中...</span>
+                        <span>💨 --km/h</span>
+                    </div>
                 `;
+                console.log('天气获取失败:', e);
             }
         }
+        
+        // 立即获取
         fetchWeatherAndLocation();
         
-        // 自动刷新天气（每小时）
+        // 每小时刷新
         setInterval(fetchWeatherAndLocation, 3600000);
     </script>
 </body>
