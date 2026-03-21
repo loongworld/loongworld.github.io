@@ -17,32 +17,67 @@
             justify-content: center;
             align-items: center;
             color: white;
+            overflow-x: hidden;
         }
         
-        /* 导航链接 */
-        .nav-links {
+        /* 天气信息 - 左上角 */
+        .weather-info {
             position: fixed;
-            top: 30px;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 13px;
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 80%;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            max-width: 200px;
         }
         
-        .nav-links a {
-            color: rgba(255,255,255,0.9);
-            text-decoration: none;
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.3s;
+        .weather-location {
+            font-size: 12px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+        .weather-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .weather-icon { font-size: 18px; }
+        .weather-temp { font-weight: 600; }
+        .weather-desc { font-size: 12px; opacity: 0.8; }
+        
+        /* 跳舞美女 - 右下角 */
+        .dancing-girl {
+            position: fixed;
+            bottom: 0;
+            right: 80px;
+            width: 180px;
+            height: 320px;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .dancing-girl img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: dance 2s ease-in-out infinite;
+        }
+        
+        @keyframes dance {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(2deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(-10px) rotate(-2deg); }
         }
         
         /* 时间日期 */
@@ -50,11 +85,16 @@
             text-align: center;
             margin-bottom: 40px;
             cursor: pointer;
-            transition: transform 0.3s;
+            transition: all 0.3s;
         }
         
         .datetime:hover {
             transform: scale(1.05);
+        }
+        
+        .datetime.active {
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
         
         .time {
@@ -62,6 +102,7 @@
             font-weight: 200;
             letter-spacing: 4px;
             text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
         }
         
         .date {
@@ -147,27 +188,30 @@
         @media (max-width: 768px) {
             .time { font-size: 48px; }
             .date { font-size: 14px; }
-            .nav-links { gap: 10px; font-size: 12px; }
+            .weather-info { top: 10px; left: 10px; padding: 8px 12px; }
+            .dancing-girl { width: 120px; height: 220px; right: 20px; }
             .search-box { max-width: 90%; }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <div class="nav-links">
-        <a href="https://quote.eastmoney.com/" target="_blank">💰 东方财富</a>
-        <a href="https://stockapp.com.cn/" target="_blank">📈 同花顺</a>
-        <a href="https://www.cls.cn/" target="_blank">📰 财联社</a>
-        <a href="https://xueqiu.com/" target="_blank">❄️ 雪球</a>
-        <a href="https://www.thepaper.cn/" target="_blank">📑 澎湃新闻</a>
-        <a href="https://www.bilibili.com/" target="_blank">🎬 B 站</a>
-        <a href="https://github.com/" target="_blank">🐙 GitHub</a>
-        <a href="/AAD/" target="_blank">📚 AAD</a>
-        <a href="/DH/" target="_blank">🧭 导航</a>
+    <!-- 天气信息 - 左上角 -->
+    <div class="weather-info" id="weatherInfo">
+        <div class="weather-location">📍 加载中...</div>
+        <div class="weather-detail">
+            <span class="weather-icon">🌤️</span>
+            <span class="weather-temp">--°C</span>
+        </div>
+        <div class="weather-desc">--</div>
     </div>
     
-    <!-- 时间日期 -->
-    <div class="datetime" onclick="window.open('https://quote.eastmoney.com/', '_blank')" title="点击打开东方财富">
+    <!-- 跳舞美女 - 右下角 -->
+    <div class="dancing-girl">
+        <img src="https://api.dicebear.com/9.x/notionists/svg?seed=girl&backgroundColor=ffdfbf" alt="Dancing Girl" id="dancingGirl">
+    </div>
+    
+    <!-- 时间日期 - 可点击跳转到综合导航 -->
+    <div class="datetime" id="datetime" onclick="toggleTimeStyle(); window.open('https://quote.eastmoney.com/central/', '_blank')" title="点击打开综合导航">
         <div class="time" id="time">00:00:00</div>
         <div class="date" id="date">加载中...</div>
     </div>
@@ -207,6 +251,14 @@
         setInterval(updateTime, 1000);
         updateTime();
         
+        // 点击时间变粗
+        function toggleTimeStyle() {
+            document.getElementById('datetime').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('datetime').classList.remove('active');
+            }, 300);
+        }
+        
         // 搜索
         const engines = {
             baidu: {url: 'https://www.baidu.com/s?wd=', placeholder: '百度一下，你就知道'},
@@ -228,6 +280,56 @@
             const q = document.getElementById('searchInput').value;
             if(q) window.open(engines[currentEngine].url + encodeURIComponent(q), '_blank');
         }
+        
+        // 天气 + IP 地理位置
+        async function fetchWeatherAndLocation() {
+            try {
+                // 获取 IP 和位置
+                const ipRes = await fetch('https://api.ipapi.com/api/check?access_key=demo');
+                const ipData = await ipRes.json();
+                
+                // 使用免费 API 获取位置
+                const locationRes = await fetch('https://ipapi.co/json/');
+                const locationData = await locationRes.json();
+                
+                const city = locationData.city || '北京';
+                const region = locationData.region || '北京';
+                const country = locationData.country_name || '中国';
+                
+                // 获取天气
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${locationData.latitude||39.9}&longitude=${locationData.longitude||116.4}&current_weather=true`);
+                const weatherData = await weatherRes.json();
+                
+                if(weatherData.current_weather) {
+                    const w = weatherData.current_weather;
+                    const icons = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+                    const icon = icons[w.weathercode] || '🌤️';
+                    
+                    document.getElementById('weatherInfo').innerHTML = `
+                        <div class="weather-location">📍 ${city}, ${region}</div>
+                        <div class="weather-detail">
+                            <span class="weather-icon">${icon}</span>
+                            <span class="weather-temp">${w.temperature}°C</span>
+                        </div>
+                        <div class="weather-desc">风速 ${w.windspeed}km/h</div>
+                    `;
+                }
+            } catch(e) {
+                // 默认显示北京
+                document.getElementById('weatherInfo').innerHTML = `
+                    <div class="weather-location">📍 北京</div>
+                    <div class="weather-detail">
+                        <span class="weather-icon">🌤️</span>
+                        <span class="weather-temp">--°C</span>
+                    </div>
+                    <div class="weather-desc">获取中...</div>
+                `;
+            }
+        }
+        fetchWeatherAndLocation();
+        
+        // 自动刷新天气（每小时）
+        setInterval(fetchWeatherAndLocation, 3600000);
     </script>
 </body>
 </html>
