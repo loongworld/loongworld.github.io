@@ -83,11 +83,17 @@
         }
         
         .date {
-            font-size: 16px;
-            opacity: 0.9;
+            font-size: 15px;
+            opacity: 0.88;
             margin-top: 12px;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             font-weight: 400;
+        }
+        
+        .date-lunar {
+            margin-left: 12px;
+            opacity: 0.75;
+            font-size: 14px;
         }
         
         /* 搜索框 */
@@ -107,6 +113,7 @@
         .search-box input {
             flex: 1;
             padding: 16px 20px;
+            padding-right: 60px;
             border: none;
             font-size: 17px;
             outline: none;
@@ -119,30 +126,35 @@
             color: #999;
         }
         
-        .search-box button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .search-box .search-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 20px;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102,126,234,0.35);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            color: white;
         }
         
-        .search-box button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 22px rgba(102,126,234,0.5);
+        .search-box .search-btn svg {
+            width: 28px;
+            height: 28px;
         }
         
-        .search-box button:active {
-            transform: scale(0.95);
+        .search-box .search-btn:hover {
+            transform: translateY(-50%) scale(1.08);
+        }
+        
+        .search-box .search-btn:active {
+            transform: translateY(-50%) scale(0.95);
         }
         
         /* 每日一言 - 简洁版 */
@@ -201,8 +213,16 @@
             
             .date {
                 font-size: 13px;
-                letter-spacing: 2px;
+                letter-spacing: 1px;
                 margin-top: 10px;
+                display: block;
+            }
+            
+            .date-lunar {
+                display: block;
+                margin-left: 0;
+                margin-top: 6px;
+                font-size: 13px;
             }
             
             .search-box {
@@ -213,13 +233,19 @@
             
             .search-box input {
                 padding: 14px 16px;
+                padding-right: 55px;
                 font-size: 16px;
             }
             
-            .search-box button {
-                width: 44px;
-                height: 44px;
-                font-size: 18px;
+            .search-box .search-btn {
+                width: 38px;
+                height: 38px;
+                right: 8px;
+            }
+            
+            .search-box .search-btn svg {
+                width: 24px;
+                height: 24px;
             }
             
             .daily-quote {
@@ -242,6 +268,7 @@
         @media (max-width: 400px) {
             .time { font-size: 44px; letter-spacing: 2px; }
             .date { font-size: 12px; }
+            .date-lunar { font-size: 11px; }
             .weather-info { font-size: 11px; }
             .weather-temp { font-size: 16px; }
         }
@@ -264,10 +291,14 @@
         <div class="date" id="date">加载中...</div>
     </div>
     
-    <!-- 搜索框 -->
+    <!-- 搜索框 - 百度图标 -->
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="百度一下，你就知道" onkeypress="if(event.key==='Enter')doSearch()">
-        <button onclick="doSearch()" title="百度搜索">搜索</button>
+        <button class="search-btn" onclick="doSearch()" title="百度搜索">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#4E6EF2"/>
+            </svg>
+        </button>
     </div>
     
     <!-- 每日一言 -->
@@ -281,6 +312,90 @@
     </div>
     
     <script>
+        // ===== 农历转换 =====
+        const lunarInfo = [
+            0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+            0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+            0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+            0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+            0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+            0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+            0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+            0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+            0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+            0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
+            0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+            0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+            0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+            0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+            0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0
+        ];
+        
+        const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+        const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+        const lunarMonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+        
+        function getLunarYear(year) {
+            return tianGan[(year - 4) % 10] + diZhi[(year - 4) % 12] + '年';
+        }
+        
+        function lunarDay(day) {
+            const nStr1 = ['初','十','廿','卅'];
+            const nStr2 = ['','十','二十','三十'];
+            if (day === 10) return '初十';
+            if (day === 20) return '二十';
+            if (day === 30) return '三十';
+            return nStr1[Math.floor((day-1)/10)] + nStr2[(day-1)%10];
+        }
+        
+        function dateToLunar(date) {
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            
+            let offset = (Date.UTC(year, month-1, day) - Date.UTC(1900, 0, 31)) / 86400000;
+            let lunarYear, lunarMonth, lunarDay;
+            
+            for (let i = 0; i < lunarInfo.length; i++) {
+                let days = (lunarInfo[i] & 0x0f) === 0x0f ? 384 : 354;
+                if (offset <= days) {
+                    lunarYear = 1900 + i;
+                    break;
+                }
+                offset -= days;
+            }
+            
+            let isLeap = false;
+            let leapMonth = (lunarInfo[lunarYear - 1900] >> 4) & 0x0f;
+            
+            for (let i = 0; i <= 12; i++) {
+                let monthDays = ((lunarInfo[lunarYear - 1900] >> (15 - i)) & 0x01) === 1 ? 30 : 29;
+                if (i === leapMonth) {
+                    isLeap = true;
+                    let leapDays = ((lunarInfo[lunarYear - 1900] >> (15 - i - 1)) & 0x01) === 1 ? 30 : 29;
+                    if (offset < leapDays) {
+                        lunarMonth = i;
+                        lunarDay = Math.floor(offset) + 1;
+                        isLeap = true;
+                        break;
+                    }
+                    offset -= leapDays;
+                }
+                if (offset < monthDays) {
+                    lunarMonth = i;
+                    lunarDay = Math.floor(offset) + 1;
+                    break;
+                }
+                offset -= monthDays;
+            }
+            
+            const yearGanZhi = getLunarYear(lunarYear);
+            const monthStr = (isLeap ? '闰' : '') + lunarMonths[lunarMonth - 1] + '月';
+            const dayStr = lunarDay(lunarDay);
+            
+            return { year: yearGanZhi, month: monthStr, day: dayStr };
+        }
+        
         // ===== 时间功能 =====
         function updateTime() {
             const now = new Date();
@@ -293,8 +408,15 @@
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
-            document.getElementById('date').textContent = 
-                year + '年' + month + '月' + day + '日';
+            const weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+            const week = weekDays[now.getDay()];
+            
+            // 农历
+            const lunar = dateToLunar(now);
+            
+            document.getElementById('date').innerHTML = 
+                year + '年' + month + '月' + day + '日 ' + week +
+                '<span class="date-lunar">' + lunar.year + lunar.month + lunar.day + '</span>';
         }
         setInterval(updateTime, 1000);
         updateTime();
@@ -329,24 +451,29 @@
         }
         fetchQuote();
         
-        // ===== 天气 + 地理位置 =====
+        // ===== 天气 + 地理位置（基于访问者 IP）=====
         async function fetchWeatherAndLocation() {
             try {
+                // 第一步：获取访问者 IP 和位置信息
                 const ipRes = await fetch('https://ipapi.co/json/');
-                if(!ipRes.ok) throw new Error('IP API failed');
+                if (!ipRes.ok) throw new Error('IP API 失败');
                 const ipData = await ipRes.json();
                 
+                // 获取城市、省份、国家
                 const city = ipData.city || '北京';
+                const region = ipData.region || '北京';
+                const country = ipData.country_name || '中国';
                 const lat = ipData.latitude || 39.9042;
                 const lon = ipData.longitude || 116.4074;
                 
+                // 第二步：根据经纬度获取天气
                 const weatherRes = await fetch(
                     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
                 );
-                if(!weatherRes.ok) throw new Error('Weather API failed');
+                if (!weatherRes.ok) throw new Error('Weather API 失败');
                 const weatherData = await weatherRes.json();
                 
-                if(weatherData.current_weather) {
+                if (weatherData.current_weather) {
                     const w = weatherData.current_weather;
                     const icons = {
                         0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
@@ -360,7 +487,7 @@
                     const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
                     
                     document.getElementById('weatherInfo').innerHTML = `
-                        <div class="weather-location">📍 ${city}</div>
+                        <div class="weather-location">📍 ${city}${city !== region ? ' · ' + region : ''}</div>
                         <div class="weather-main">
                             <span class="weather-icon">${icon}</span>
                             <span class="weather-temp">${w.temperature}°C</span>
@@ -371,13 +498,52 @@
                     document.getElementById('weatherExtra').textContent = desc + ' 💨 ' + w.windspeed + 'km/h';
                 }
             } catch(e) {
+                // 如果 IP 定位失败，尝试备用 API
+                try {
+                    const backupRes = await fetch('https://ipwho.is/');
+                    const backupData = await backupRes.json();
+                    
+                    if (backupData.success) {
+                        const city = backupData.city || '北京';
+                        const lat = backupData.latitude || 39.9042;
+                        const lon = backupData.longitude || 116.4074;
+                        
+                        const weatherRes = await fetch(
+                            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
+                        );
+                        const weatherData = await weatherRes.json();
+                        
+                        if (weatherData.current_weather) {
+                            const w = weatherData.current_weather;
+                            const icons = {
+                                0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
+                                45: ['🌫️', '雾'], 51: ['🌦️', '小雨'], 61: ['🌧️', '小雨'],
+                                71: ['🌨️', '小雪'], 80: ['🌦️', '阵雨'], 95: ['⛈️', '雷雨']
+                            };
+                            const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
+                            
+                            document.getElementById('weatherInfo').innerHTML = `
+                                <div class="weather-location">📍 ${city}</div>
+                                <div class="weather-main">
+                                    <span class="weather-icon">${icon}</span>
+                                    <span class="weather-temp">${w.temperature}°C</span>
+                                </div>
+                                <div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>
+                            `;
+                            return;
+                        }
+                    }
+                } catch(e2) {
+                    // 最终失败，显示默认
+                }
+                
                 document.getElementById('weatherInfo').innerHTML = `
-                    <div class="weather-location">📍 北京</div>
+                    <div class="weather-location">📍 获取位置中...</div>
                     <div class="weather-main">
-                        <span class="weather-icon">🌤️</span>
+                        <span class="weather-icon">🌡️</span>
                         <span class="weather-temp">--°C</span>
                     </div>
-                    <div class="weather-extra">获取中...</div>
+                    <div class="weather-extra">请检查网络</div>
                 `;
             }
         }
