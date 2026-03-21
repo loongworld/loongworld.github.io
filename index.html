@@ -453,16 +453,28 @@
             }
         }
 
-        // ===== 天气 =====
+        // ===== 天气 (使用 Open-Meteo 免费 API，无需 Key) =====
         async function fetchWeather() {
             try {
-                const response = await fetch('https://api.seniverse.com/v3/weather/now.json?key=YOUR_API_KEY&location=beijing&language=zh-Hans&unit=c');
+                // 北京坐标：39.9042, 116.4074
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true');
                 const data = await response.json();
-                if (data.results) {
-                    const weather = data.results[0].now;
+                if (data.current_weather) {
+                    const weather = data.current_weather;
+                    const weatherIcons = {
+                        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+                        45: '🌫️', 48: '🌫️',
+                        51: '🌦️', 53: '🌦️', 55: '🌦️',
+                        61: '🌧️', 63: '🌧️', 65: '🌧️',
+                        71: '🌨️', 73: '🌨️', 75: '🌨️',
+                        80: '🌦️', 81: '🌧️', 82: '⛈️',
+                        95: '⛈️', 96: '⛈️', 99: '⛈️'
+                    };
+                    const icon = weatherIcons[weather.weathercode] || '🌤️';
                     document.getElementById('weather').innerHTML = `
-                        <span>${weather.text}</span>
+                        <span>${icon}</span>
                         <span>${weather.temperature}°C</span>
+                        <span style="opacity:0.6;font-size:12px">💨 ${weather.windspeed}km/h</span>
                     `;
                 }
             } catch (e) {
@@ -470,6 +482,8 @@
             }
         }
         fetchWeather();
+        // 每小时更新天气
+        setInterval(fetchWeather, 3600000);
 
         // ===== 股票数据 =====
         async function fetchStock(code, elementId, changeId) {
