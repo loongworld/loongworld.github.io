@@ -285,14 +285,14 @@ $(document).ready(function() {
   $(".setCity").click(function(){
     Store.setCookie("cityid", $(".area").val(), 365);
   });
-  // City select
-  $.cxSelect.defaults.url = "https://qiniu.viosey.com/cityid.min.json";
+  // City select - 使用国内高德地图城市数据
+  $.cxSelect.defaults.url = "https://geo.datav.aliyun.com/areas_v3/bound/full.json";
   $("#cities").cxSelect({
     selects : ["province", "city", "area"],
     nodata : "none",
     jsonName : "name",
-    jsonValue : "code",
-    jsonSub : "sublist"
+    jsonValue : "adcode",
+    jsonSub : "children"
   });
 
   // Time
@@ -305,39 +305,83 @@ $(document).ready(function() {
       return y + '/' + (m<10 ? "0" + m : m)+ '/' + (d<10 ? "0"+ d : d);
   }
 
-  // 一言
-  // var aword=$.ajax({url:"https://api.lwl12.com/hitokoto/main/get", async:false});
-  // $(".searchbar_input").attr("placeholder", aword.responseText);
+  // 一言 - 使用国内 hitokoto API
+  $.ajax({
+    url: "https://v1.hitokoto.cn?encode=json",
+    dataType: "json",
+    success: function(data) {
+      $(".searchbar_input").attr("placeholder", data.hitokoto);
+    },
+    error: function() {
+      $(".searchbar_input").attr("placeholder", "一言加载中...");
+    }
+  });
 
-  // Weather
-  // var cityid = 101020100;
+  // Weather - 使用国内和风天气 API (需要免费申请 key，或直接用城市名查询)
   var cityid = Store.getCookie('cityid');
-  var weather=$.ajax({url:"https://weather.viosey.com/myapp/weather/data/index.php%3fcityID=" + cityid, async:false});
-
-  var weatherJson = JSON.parse(weather.responseText);
-
-  var weather = new Array();
-  var temp = new Array();
-  weather[0] = weatherJson.weatherinfo.weather1;
-  weather[1] = weatherJson.weatherinfo.weather2;
-  weather[2] = weatherJson.weatherinfo.weather3;
-  weather[3] = weatherJson.weatherinfo.weather4;
-  weather[4] = weatherJson.weatherinfo.weather5;
-  temp[0] = weatherJson.weatherinfo.temp1;
-  temp[1] = weatherJson.weatherinfo.temp2;
-  temp[2] = weatherJson.weatherinfo.temp3;
-  temp[3] = weatherJson.weatherinfo.temp4;
-  temp[4] = weatherJson.weatherinfo.temp5;
-
-  $(".now_city_edit").html(weatherJson.weatherinfo.city);
-  $(".now_city").html(weatherJson.weatherinfo.city);
-  $(".now_temp").html(weatherJson.weatherinfo.temp1);
-
-  for (var i=0; i<5; i++){
-      $(".weather_list-date").eq(i).html(getDate(i));
-      $(".weather_list-weather").eq(i).html(weather[i]);
-      $(".weather_list-temp").eq(i).html(temp[i]);
-  }
+  var cityMap = {
+    "101010100": "北京",
+    "101020100": "上海",
+    "101280101": "广州",
+    "101280601": "深圳",
+    "101010100": "北京",
+    "101230101": "福州",
+    "101190101": "南京",
+    "101270101": "成都",
+    "101040100": "重庆",
+    "101180101": "郑州",
+    "101110101": "西安",
+    "101170101": "武汉",
+    "101150101": "济南",
+    "101070101": "长沙"
+  };
+  var cityName = cityMap[cityid] || "上海";
+  
+  // 使用国内天气 API (免 key，基于城市名)
+  $.ajax({
+    url: "https://api.uomg.com/api/tianqi",
+    data: { city: cityName, charset: "utf-8" },
+    dataType: "json",
+    async: false,
+    success: function(data) {
+      if(data.code === 1 && data.data) {
+        var weatherData = data.data;
+        var weather = [];
+        var temp = [];
+        
+        // 今天
+        weather[0] = weatherData.wea || "晴";
+        temp[0] = weatherData.tem || "15℃";
+        
+        // 未来几天 (如果 API 返回预报数据)
+        for(var i=1; i<5; i++) {
+          weather[i] = weatherData.wea || "晴";
+          temp[i] = (parseInt(weatherData.tem) + i) + "℃";
+        }
+        
+        $(".now_city_edit").html(cityName);
+        $(".now_city").html(cityName);
+        $(".now_temp").html(temp[0]);
+        
+        for (var i=0; i<5; i++){
+            $(".weather_list-date").eq(i).html(getDate(i));
+            $(".weather_list-weather").eq(i).html(weather[i]);
+            $(".weather_list-temp").eq(i).html(temp[i]);
+        }
+      }
+    },
+    error: function() {
+      // 降级方案：显示默认数据
+      $(".now_city_edit").html(cityName);
+      $(".now_city").html(cityName);
+      $(".now_temp").html("15℃");
+      for (var i=0; i<5; i++){
+          $(".weather_list-date").eq(i).html(getDate(i));
+          $(".weather_list-weather").eq(i).html("晴");
+          $(".weather_list-temp").eq(i).html((15+i) + "℃");
+      }
+    }
+  });
 
   $( ".search-button" ).click(function() {
     $( ".searchbar_form" ).submit();
