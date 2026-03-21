@@ -2,14 +2,14 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>万里千寻 - 龙哥的起始页</title>
     <link rel="icon" href="favicon.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -17,85 +17,76 @@
             justify-content: center;
             align-items: center;
             color: white;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         /* 天气信息 - 左上角 */
         .weather-info {
             position: fixed;
-            top: 25px;
-            left: 25px;
-            background: rgba(255,255,255,0.18);
-            backdrop-filter: blur(12px);
-            padding: 14px 20px;
-            border-radius: 14px;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 12px 18px;
+            border-radius: 12px;
             font-size: 13px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            min-width: 170px;
-            border: 1px solid rgba(255,255,255,0.2);
+            gap: 5px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            border: 1px solid rgba(255,255,255,0.15);
+            z-index: 100;
         }
         
         .weather-location {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
-            color: rgba(255,255,255,0.95);
+            gap: 5px;
+            opacity: 0.95;
         }
         
         .weather-main {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .weather-icon { 
-            font-size: 26px; 
-        }
-        .weather-temp { 
-            font-weight: 700; 
-            font-size: 22px;
-        }
-        .weather-extra {
-            font-size: 12px;
-            opacity: 0.8;
-        }
+        .weather-icon { font-size: 22px; }
+        .weather-temp { font-weight: 700; font-size: 20px; }
+        .weather-extra { font-size: 11px; opacity: 0.8; }
         
         /* 时间日期 */
         .datetime-container {
             text-align: center;
-            margin-bottom: 35px;
-        }
-        
-        .datetime {
-            display: inline-block;
+            margin-bottom: 40px;
             cursor: pointer;
-            padding: 15px 30px;
-            border-radius: 16px;
+            padding: 20px 30px;
+            border-radius: 20px;
             transition: background 0.3s;
         }
         
-        .datetime:hover {
-            background: rgba(255,255,255,0.08);
+        .datetime-container:hover {
+            background: rgba(255,255,255,0.06);
         }
         
         .time {
-            font-size: 88px;
-            font-weight: 200;
-            letter-spacing: 6px;
-            text-shadow: 0 6px 25px rgba(0,0,0,0.25);
+            font-size: 96px;
+            font-weight: 600;
+            letter-spacing: 8px;
+            text-shadow: 0 8px 30px rgba(0,0,0,0.3);
             line-height: 1;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Microsoft YaHei", sans-serif;
         }
         
         .date {
-            font-size: 17px;
-            opacity: 0.92;
-            margin-top: 10px;
-            letter-spacing: 2px;
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 12px;
+            letter-spacing: 3px;
             font-weight: 400;
         }
         
@@ -106,8 +97,8 @@
             border-radius: 50px;
             box-shadow: 0 15px 60px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 620px;
-            padding: 10px;
+            max-width: 580px;
+            padding: 8px;
             margin: 0 20px;
             display: flex;
             align-items: center;
@@ -115,7 +106,7 @@
         
         .search-box input {
             flex: 1;
-            padding: 16px 24px;
+            padding: 16px 20px;
             border: none;
             font-size: 17px;
             outline: none;
@@ -131,21 +122,22 @@
         .search-box button {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
-            width: 52px;
-            height: 52px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 22px;
+            font-size: 20px;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(102,126,234,0.35);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            color: white;
         }
         
         .search-box button:hover {
-            transform: scale(1.08);
+            transform: scale(1.1);
             box-shadow: 0 6px 22px rgba(102,126,234,0.5);
         }
         
@@ -153,77 +145,110 @@
             transform: scale(0.95);
         }
         
-        /* 每日一言 */
+        /* 每日一言 - 简洁版 */
         .daily-quote {
-            max-width: 650px;
+            max-width: 600px;
             text-align: center;
-            padding: 28px 35px;
+            padding: 20px 25px;
             margin: 35px 20px 0;
-            background: rgba(255,255,255,0.12);
-            backdrop-filter: blur(12px);
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
         
         .quote-text {
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.8;
-            color: rgba(255,255,255,0.95);
-            margin-bottom: 12px;
-            font-weight: 400;
-        }
-        
-        .quote-author {
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-            font-style: normal;
-            letter-spacing: 1px;
-        }
-        
-        .quote-refresh {
-            margin-top: 16px;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.25);
             color: rgba(255,255,255,0.9);
-            padding: 8px 22px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-        
-        .quote-refresh:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
+            font-weight: 400;
+            letter-spacing: 1px;
         }
         
         /* 底部 */
         .footer {
             position: fixed;
-            bottom: 18px;
-            font-size: 12px;
-            opacity: 0.55;
+            bottom: 15px;
+            font-size: 11px;
+            opacity: 0.5;
             text-align: center;
             letter-spacing: 1px;
         }
         
+        /* 手机端优化 */
         @media (max-width: 768px) {
-            .time { font-size: 56px; letter-spacing: 3px; }
-            .date { font-size: 14px; }
-            .weather-info { top: 12px; left: 12px; padding: 11px 14px; min-width: 140px; }
-            .weather-temp { font-size: 18px; }
-            .search-box { max-width: 90%; padding: 8px; }
-            .search-box input { padding: 14px 18px; font-size: 16px; }
-            .search-box button { width: 46px; height: 46px; font-size: 20px; }
-            .daily-quote { padding: 22px 25px; margin: 25px 15px 0; }
-            .quote-text { font-size: 15px; }
+            body {
+                justify-content: flex-start;
+                padding-top: 80px;
+            }
+            
+            .weather-info {
+                top: 10px;
+                left: 10px;
+                padding: 10px 14px;
+                min-width: 130px;
+            }
+            
+            .weather-temp { font-size: 17px; }
+            .weather-icon { font-size: 19px; }
+            
+            .datetime-container {
+                padding: 15px 20px;
+                margin-bottom: 30px;
+            }
+            
+            .time {
+                font-size: 52px;
+                letter-spacing: 4px;
+                font-weight: 600;
+            }
+            
+            .date {
+                font-size: 13px;
+                letter-spacing: 2px;
+                margin-top: 10px;
+            }
+            
+            .search-box {
+                max-width: calc(100% - 30px);
+                padding: 6px;
+                margin: 0 15px;
+            }
+            
+            .search-box input {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            
+            .search-box button {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+            
+            .daily-quote {
+                padding: 15px 18px;
+                margin: 25px 15px 0;
+            }
+            
+            .quote-text {
+                font-size: 14px;
+                line-height: 1.7;
+            }
+            
+            .footer {
+                font-size: 10px;
+                bottom: 10px;
+            }
+        }
+        
+        /* 小屏幕手机 */
+        @media (max-width: 400px) {
+            .time { font-size: 44px; letter-spacing: 2px; }
+            .date { font-size: 12px; }
+            .weather-info { font-size: 11px; }
+            .weather-temp { font-size: 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- 天气信息 - 左上角 -->
+    <!-- 天气信息 -->
     <div class="weather-info" id="weatherInfo">
         <div class="weather-location">📍 定位中...</div>
         <div class="weather-main">
@@ -234,24 +259,20 @@
     </div>
     
     <!-- 时间日期 -->
-    <div class="datetime-container">
-        <div class="datetime" onclick="window.open('central/', '_blank')" title="点击打开综合导航">
-            <div class="time" id="time">00:00:00</div>
-            <div class="date" id="date">加载中...</div>
-        </div>
+    <div class="datetime-container" onclick="window.open('central/', '_blank')" title="点击打开综合导航">
+        <div class="time" id="time">00:00:00</div>
+        <div class="date" id="date">加载中...</div>
     </div>
     
     <!-- 搜索框 -->
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="百度一下，你就知道" onkeypress="if(event.key==='Enter')doSearch()">
-        <button onclick="doSearch()" title="百度搜索">🔍</button>
+        <button onclick="doSearch()" title="百度搜索">搜索</button>
     </div>
     
     <!-- 每日一言 -->
     <div class="daily-quote">
         <p class="quote-text" id="quoteText">加载中...</p>
-        <p class="quote-author" id="quoteAuthor"></p>
-        <button class="quote-refresh" onclick="fetchQuote()">🔄 换一句</button>
     </div>
     
     <!-- 底部 -->
@@ -268,9 +289,12 @@
                 String(now.getMinutes()).padStart(2,'0') + ':' +
                 String(now.getSeconds()).padStart(2,'0');
             
-            const options = { year:'numeric', month:'long', day:'numeric', weekday:'long' };
+            // 公历年月日
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
             document.getElementById('date').textContent = 
-                now.toLocaleDateString('zh-CN', options);
+                year + '年' + month + '月' + day + '日';
         }
         setInterval(updateTime, 1000);
         updateTime();
@@ -289,20 +313,18 @@
                 const res = await fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k&max_length=50');
                 const data = await res.json();
                 document.getElementById('quoteText').textContent = '"' + data.hitokoto + '"';
-                document.getElementById('quoteAuthor').textContent = data.from ? '—— ' + data.from : '';
             } catch(e) {
                 const quotes = [
-                    {text: '生活不止眼前的苟且，还有诗和远方。', author: '高晓松'},
-                    {text: '人生没有彩排，每一天都是现场直播。', author: '李开复'},
-                    {text: '越努力，越幸运。', author: '自律'},
-                    {text: '心若向阳，无惧悲伤。', author: '佚名'},
-                    {text: '简单生活，快乐自来。', author: '佚名'},
-                    {text: '不忘初心，方得始终。', author: '华严经'},
-                    {text: '未来可期，人间值得。', author: '佚名'}
+                    '生活不止眼前的苟且，还有诗和远方。',
+                    '人生没有彩排，每一天都是现场直播。',
+                    '越努力，越幸运。',
+                    '心若向阳，无惧悲伤。',
+                    '简单生活，快乐自来。',
+                    '不忘初心，方得始终。',
+                    '未来可期，人间值得。'
                 ];
                 const q = quotes[Math.floor(Math.random() * quotes.length)];
-                document.getElementById('quoteText').textContent = '"' + q.text + '"';
-                document.getElementById('quoteAuthor').textContent = '—— ' + q.author;
+                document.getElementById('quoteText').textContent = '"' + q + '"';
             }
         }
         fetchQuote();
@@ -310,17 +332,14 @@
         // ===== 天气 + 地理位置 =====
         async function fetchWeatherAndLocation() {
             try {
-                // 获取 IP 位置
                 const ipRes = await fetch('https://ipapi.co/json/');
                 if(!ipRes.ok) throw new Error('IP API failed');
                 const ipData = await ipRes.json();
                 
                 const city = ipData.city || '北京';
-                const region = ipData.region || '北京';
                 const lat = ipData.latitude || 39.9042;
                 const lon = ipData.longitude || 116.4074;
                 
-                // 获取天气
                 const weatherRes = await fetch(
                     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
                 );
@@ -346,8 +365,10 @@
                             <span class="weather-icon">${icon}</span>
                             <span class="weather-temp">${w.temperature}°C</span>
                         </div>
-                        <div class="weather-extra">${desc} · 💨 ${w.windspeed}km/h</div>
+                        <div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>
                     `;
+                    
+                    document.getElementById('weatherExtra').textContent = desc + ' 💨 ' + w.windspeed + 'km/h';
                 }
             } catch(e) {
                 document.getElementById('weatherInfo').innerHTML = `
