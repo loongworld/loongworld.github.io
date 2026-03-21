@@ -3,312 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>万里千寻 - 龙哥的个人导航</title>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <title>万里千寻 - 龙哥的起始页</title>
+    <link rel="icon" href="favicon.png">
     <style>
-        /* ===== 基础样式 ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; }
-        
-        /* ===== 主题变量 ===== */
-        :root {
-            --primary: #5cb85c;
-            --primary-dark: #449d44;
-            --text: #333;
-            --text-light: #666;
-            --bg: #f8fcf8;
-            --card: rgba(255,255,255,0.9);
-        }
-        
-        [data-theme="dark"] {
-            --primary: #6fcf6f;
-            --primary-dark: #5cb85c;
-            --text: #e0e0e0;
-            --text-light: #aaa;
-            --bg: #1a1a2e;
-            --card: rgba(30,30,40,0.9);
-        }
         
         body {
-            background: linear-gradient(135deg, var(--bg) 0%, #e8f5e9 100%);
-            color: var(--text);
-            transition: all 0.3s ease;
-        }
-        
-        /* ===== 顶部导航 ===== */
-        .top-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 15px 30px;
-            background: var(--card);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            justify-content: center;
+            color: #333;
         }
         
-        .nav-links {
+        /* 搜索容器 */
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+            padding: 0 20px;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            text-align: center;
+            color: white;
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* 搜索引擎切换 */
+        .engine-tabs {
             display: flex;
-            gap: 25px;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
-        .nav-links a {
-            color: var(--text);
-            text-decoration: none;
+        .engine-tab {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
             font-size: 14px;
-            transition: color 0.3s;
+            transition: all 0.3s;
         }
         
-        .nav-links a:hover { color: var(--primary); }
-        
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        .engine-tab:hover, .engine-tab.active {
+            background: rgba(255,255,255,0.4);
         }
         
-        .weather {
-            font-size: 13px;
+        /* 搜索框 */
+        .search-box {
+            position: relative;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 18px 60px 18px 25px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-box button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: #764ba2;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        /* 快捷链接 */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .link-group {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .link-group h3 {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
         
-        .theme-btn {
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .theme-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
-        
-        /* ===== 主内容区 ===== */
-        .main {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 100px 20px 40px;
-            gap: 35px;
-        }
-        
-        /* ===== 时钟 ===== */
-        .clock {
-            text-align: center;
-        }
-        
-        .clock h1 {
-            font-size: 56px;
-            font-weight: 200;
-            letter-spacing: 6px;
-            color: var(--text);
-        }
-        
-        .clock p {
-            font-size: 15px;
-            color: var(--text-light);
-            margin-top: 8px;
-            letter-spacing: 2px;
-        }
-        
-        /* ===== 搜索框 ===== */
-        .search-box {
-            width: 100%;
-            max-width: 550px;
-            display: flex;
-            background: var(--card);
-            border-radius: 50px;
-            padding: 6px;
-            box-shadow: 0 8px 30px rgba(92,184,92,0.15);
-        }
-        
-        .search-box input {
-            flex: 1;
-            border: none;
-            padding: 14px 24px;
-            font-size: 16px;
-            background: transparent;
-            color: var(--text);
-            outline: none;
-        }
-        
-        .search-box button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.3s;
-        }
-        
-        .search-box button:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-        
-        /* ===== 每日一言 ===== */
-        .daily-quote {
-            max-width: 600px;
-            text-align: center;
-            padding: 25px 30px;
-            background: var(--card);
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(92,184,92,0.1);
-            position: relative;
-        }
-        
-        .daily-quote::before {
-            content: '"';
-            font-size: 60px;
-            color: var(--primary);
-            opacity: 0.3;
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            font-family: Georgia, serif;
-        }
-        
-        .quote-text {
-            font-size: 16px;
-            line-height: 1.8;
-            color: var(--text);
-            margin-bottom: 12px;
-        }
-        
-        .quote-author {
-            font-size: 13px;
-            color: var(--text-light);
-            font-style: italic;
-        }
-        
-        .refresh-btn {
-            margin-top: 15px;
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
+        .link-group a {
+            display: block;
+            color: #555;
+            text-decoration: none;
+            padding: 6px 0;
             font-size: 13px;
             transition: all 0.3s;
         }
         
-        .refresh-btn:hover {
-            background: var(--primary);
-            color: white;
+        .link-group a:hover {
+            color: #667eea;
+            padding-left: 5px;
         }
         
-        /* ===== 大盘走势 ===== */
+        /* 大盘走势 */
         .stocks {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             width: 100%;
-            max-width: 900px;
+            max-width: 800px;
+            padding: 0 20px;
+            margin-bottom: 30px;
         }
         
         .stock-card {
-            background: var(--card);
-            padding: 20px;
+            background: rgba(255,255,255,0.95);
             border-radius: 12px;
+            padding: 18px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(92,184,92,0.1);
-            transition: transform 0.3s;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
         }
-        
-        .stock-card:hover { transform: translateY(-5px); }
         
         .stock-name {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 10px;
-        }
-        
-        .stock-price {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--text);
+            font-size: 12px;
+            color: #888;
             margin-bottom: 8px;
         }
         
+        .stock-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
         .stock-change {
-            font-size: 13px;
+            font-size: 12px;
         }
         
         .up { color: #e53935; }
         .down { color: #43a047; }
         
-        /* ===== 快捷链接 ===== */
-        .links-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 900px;
-        }
-        
-        .link-group {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(92,184,92,0.1);
-        }
-        
-        .link-group h3 {
-            font-size: 15px;
-            margin-bottom: 15px;
-            color: var(--text);
-        }
-        
-        .link-group a {
-            display: block;
-            color: var(--text-light);
-            text-decoration: none;
-            padding: 8px 0;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        
-        .link-group a:hover {
-            color: var(--primary);
-            padding-left: 8px;
-        }
-        
-        /* ===== 底部 ===== */
+        /* 底部 */
         .footer {
+            position: fixed;
+            bottom: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
             text-align: center;
-            padding: 20px;
-            font-size: 13px;
-            color: var(--text-light);
         }
         
-        /* ===== 移动端 ===== */
         @media (max-width: 768px) {
-            .clock h1 { font-size: 36px; }
-            .stocks { grid-template-columns: repeat(2, 1fr); }
-            .links-grid { grid-template-columns: repeat(2, 1fr); }
-            .top-nav { padding: 12px 15px; }
-            .nav-links { gap: 15px; }
+            .logo { font-size: 32px; }
+            .quick-links, .stocks { grid-template-columns: repeat(2, 1fr); }
+            .engine-tabs { flex-wrap: wrap; }
         }
         
-        /* ===== 加载动画 ===== */
+        /* 加载动画 */
         .loading {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(92,184,92,0.3);
-            border-top-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -319,176 +209,125 @@
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
-    <nav class="top-nav">
-        <div class="nav-links">
-            <a href="#">🏠 首页</a>
-            <a href="#finance">💰 财经</a>
-            <a href="#news">📰 新闻</a>
-            <a href="#tools">🛠️ 工具</a>
+    <!-- Logo -->
+    <div class="logo">🌹 万里千寻</div>
+    
+    <!-- 搜索区域 -->
+    <div class="search-container">
+        <!-- 搜索引擎切换 -->
+        <div class="engine-tabs">
+            <button class="engine-tab active" onclick="setEngine('baidu')">百度</button>
+            <button class="engine-tab" onclick="setEngine('google')">谷歌</button>
+            <button class="engine-tab" onclick="setEngine('bing')">必应</button>
+            <button class="engine-tab" onclick="setEngine('sogou')">搜狗</button>
         </div>
-        <div class="nav-right">
-            <div class="weather" id="weather"><span class="loading"></span></div>
-            <button class="theme-btn" onclick="toggleTheme()">🌙</button>
-        </div>
-    </nav>
-
-    <!-- 主内容 -->
-    <main class="main">
-        <!-- 时钟 -->
-        <div class="clock">
-            <h1 id="time">00:00:00</h1>
-            <p id="date">加载中...</p>
-        </div>
-
+        
         <!-- 搜索框 -->
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="搜索..." onkeypress="if(event.key==='Enter')doSearch()">
-            <button onclick="doSearch()">🔍 搜索</button>
+            <input type="text" id="searchInput" placeholder="输入搜索内容..." onkeypress="if(event.key==='Enter')doSearch()">
+            <button onclick="doSearch()">🔍</button>
         </div>
-
-        <!-- 每日一言 -->
-        <div class="daily-quote">
-            <p class="quote-text" id="quoteText">加载中...</p>
-            <p class="quote-author" id="quoteAuthor"></p>
-            <button class="refresh-btn" onclick="fetchQuote()">🔄 换一句</button>
+    </div>
+    
+    <!-- 大盘走势 -->
+    <div class="stocks">
+        <div class="stock-card">
+            <div class="stock-name">🇨🇳 上证指数</div>
+            <div class="stock-price" id="sh000001">---</div>
+            <div class="stock-change" id="sh000001-change"><span class="loading"></span></div>
         </div>
-
-        <!-- 大盘走势 -->
-        <div class="stocks" id="finance">
-            <div class="stock-card">
-                <div class="stock-name">🇨🇳 上证指数</div>
-                <div class="stock-price" id="sh000001">---</div>
-                <div class="stock-change" id="sh000001-change"><span class="loading"></span></div>
-            </div>
-            <div class="stock-card">
-                <div class="stock-name">🇨🇳 深证成指</div>
-                <div class="stock-price" id="sz399001">---</div>
-                <div class="stock-change" id="sz399001-change"><span class="loading"></span></div>
-            </div>
-            <div class="stock-card">
-                <div class="stock-name">🇨🇳 创业板指</div>
-                <div class="stock-price" id="sz399006">---</div>
-                <div class="stock-change" id="sz399006-change"><span class="loading"></span></div>
-            </div>
-            <div class="stock-card">
-                <div class="stock-name">🇨🇳 科创 50</div>
-                <div class="stock-price" id="sh000688">---</div>
-                <div class="stock-change" id="sh000688-change"><span class="loading"></span></div>
-            </div>
+        <div class="stock-card">
+            <div class="stock-name">🇨🇳 深证成指</div>
+            <div class="stock-price" id="sz399001">---</div>
+            <div class="stock-change" id="sz399001-change"><span class="loading"></span></div>
         </div>
-
-        <!-- 快捷链接 -->
-        <div class="links-grid" id="tools">
-            <div class="link-group" id="finance-links">
-                <h3>💰 财经</h3>
-                <a href="https://quote.eastmoney.com/" target="_blank">东方财富</a>
-                <a href="https://stockapp.com.cn/" target="_blank">同花顺</a>
-                <a href="https://www.cls.cn/" target="_blank">财联社</a>
-                <a href="https://xueqiu.com/" target="_blank">雪球</a>
-            </div>
-            <div class="link-group" id="news-links">
-                <h3>📰 新闻</h3>
-                <a href="https://www.thepaper.cn/" target="_blank">澎湃新闻</a>
-                <a href="https://www.163.com/" target="_blank">网易</a>
-                <a href="https://news.sina.com.cn/" target="_blank">新浪</a>
-                <a href="https://www.chinanews.com.cn/" target="_blank">中新网</a>
-            </div>
-            <div class="link-group" id="video-links">
-                <h3>🎬 视频</h3>
-                <a href="https://www.bilibili.com/" target="_blank">哔哩哔哩</a>
-                <a href="https://www.iqiyi.com/" target="_blank">爱奇艺</a>
-                <a href="https://v.qq.com/" target="_blank">腾讯视频</a>
-                <a href="https://www.youku.com/" target="_blank">优酷</a>
-            </div>
-            <div class="link-group" id="tool-links">
-                <h3>🛠️ 工具</h3>
-                <a href="https://fanyi.baidu.com/" target="_blank">翻译</a>
-                <a href="https://cli.im/" target="_blank">二维码</a>
-                <a href="https://tool.lu/" target="_blank">在线工具</a>
-                <a href="https://github.com/" target="_blank">GitHub</a>
-            </div>
+        <div class="stock-card">
+            <div class="stock-name">🇨🇳 创业板指</div>
+            <div class="stock-price" id="sz399006">---</div>
+            <div class="stock-change" id="sz399006-change"><span class="loading"></span></div>
         </div>
-    </main>
-
+        <div class="stock-card">
+            <div class="stock-name">🇨🇳 科创 50</div>
+            <div class="stock-price" id="sh000688">---</div>
+            <div class="stock-change" id="sh000688-change"><span class="loading"></span></div>
+        </div>
+    </div>
+    
+    <!-- 快捷链接 -->
+    <div class="quick-links">
+        <div class="link-group">
+            <h3>💰 财经</h3>
+            <a href="https://quote.eastmoney.com/" target="_blank">东方财富</a>
+            <a href="https://stockapp.com.cn/" target="_blank">同花顺</a>
+            <a href="https://www.cls.cn/" target="_blank">财联社</a>
+            <a href="https://xueqiu.com/" target="_blank">雪球</a>
+        </div>
+        <div class="link-group">
+            <h3>📰 新闻</h3>
+            <a href="https://www.thepaper.cn/" target="_blank">澎湃新闻</a>
+            <a href="https://www.163.com/" target="_blank">网易</a>
+            <a href="https://news.sina.com.cn/" target="_blank">新浪</a>
+            <a href="https://www.chinanews.com.cn/" target="_blank">中新网</a>
+        </div>
+        <div class="link-group">
+            <h3>🎬 视频</h3>
+            <a href="https://www.bilibili.com/" target="_blank">哔哩哔哩</a>
+            <a href="https://www.iqiyi.com/" target="_blank">爱奇艺</a>
+            <a href="https://v.qq.com/" target="_blank">腾讯视频</a>
+            <a href="https://www.youku.com/" target="_blank">优酷</a>
+        </div>
+        <div class="link-group">
+            <h3>🛠️ 工具</h3>
+            <a href="https://fanyi.baidu.com/" target="_blank">翻译</a>
+            <a href="https://cli.im/" target="_blank">二维码</a>
+            <a href="https://tool.lu/" target="_blank">在线工具</a>
+            <a href="https://github.com/" target="_blank">GitHub</a>
+        </div>
+    </div>
+    
     <!-- 底部 -->
-    <footer class="footer">
-        <p>🌹 万里千寻 - 龙哥的个人导航</p>
-    </footer>
-
+    <div class="footer">
+        <p>🌹 万里千寻 - 龙哥的起始页 | 2026</p>
+    </div>
+    
     <script>
-        // ===== 时钟 =====
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('time').textContent = 
-                String(now.getHours()).padStart(2,'0') + ':' +
-                String(now.getMinutes()).padStart(2,'0') + ':' +
-                String(now.getSeconds()).padStart(2,'0');
-            document.getElementById('date').textContent = 
-                now.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric', weekday:'long' });
+        // 搜索引擎配置
+        const engines = {
+            baidu: 'https://www.baidu.com/s?wd=',
+            google: 'https://www.google.com/search?q=',
+            bing: 'https://www.bing.com/search?q=',
+            sogou: 'https://www.sogou.com/web?query='
+        };
+        
+        let currentEngine = 'baidu';
+        
+        // 切换搜索引擎
+        function setEngine(engine) {
+            currentEngine = engine;
+            document.querySelectorAll('.engine-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const placeholders = {
+                baidu: '百度一下，你就知道',
+                google: 'Search the world',
+                bing: '搜索必应',
+                sogou: '搜狗搜索'
+            };
+            document.getElementById('searchInput').placeholder = placeholders[engine];
         }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // ===== 搜索 =====
+        
+        // 搜索
         function doSearch() {
-            const q = document.getElementById('searchInput').value;
-            if(q) window.open('https://www.baidu.com/s?wd='+encodeURIComponent(q), '_blank');
-        }
-
-        // ===== 主题切换 =====
-        function toggleTheme() {
-            const body = document.body;
-            const btn = document.querySelector('.theme-btn');
-            if(body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                btn.textContent = '🌙';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                btn.textContent = '☀️';
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                window.open(engines[currentEngine] + encodeURIComponent(query), '_blank');
             }
         }
-
-        // ===== 天气 (Open-Meteo 免费) =====
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current_weather=true');
-                const data = await res.json();
-                if(data.current_weather) {
-                    const w = data.current_weather;
-                    const icons = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
-                    document.getElementById('weather').innerHTML = `<span>${icons[w.weathercode]||'🌤️'}</span><span>${w.temperature}°C</span><span style="opacity:0.6;font-size:12px">💨${w.windspeed}km/h</span>`;
-                }
-            } catch(e) { document.getElementById('weather').innerHTML = '<span>🌤️ 北京</span>'; }
-        }
-        fetchWeather();
-
-        // ===== 每日一言 (免费 API) =====
-        async function fetchQuote() {
-            try {
-                const res = await fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k');
-                const data = await res.json();
-                document.getElementById('quoteText').textContent = data.hitokoto;
-                document.getElementById('quoteAuthor').textContent = data.from ? '—— ' + data.from : '';
-            } catch(e) {
-                const quotes = [
-                    {text:'生活不止眼前的苟且，还有诗和远方。', author:'高晓松'},
-                    {text:'人生没有彩排，每一天都是现场直播。', author:'李开复'},
-                    {text:'越努力，越幸运。', author:'自律'},
-                    {text:'心若向阳，无惧悲伤。', author:'佚名'},
-                    {text:'简单生活，快乐自来。', author:'佚名'}
-                ];
-                const q = quotes[Math.floor(Math.random()*quotes.length)];
-                document.getElementById('quoteText').textContent = q.text;
-                document.getElementById('quoteAuthor').textContent = '—— ' + q.author;
-            }
-        }
-        fetchQuote();
-
-        // ===== 股票数据 (新浪财经免费) =====
+        
+        // 股票数据
         async function fetchStock(code, pid, cid) {
             try {
-                const res = await fetch('https://hq.sinajs.cn/list='+code);
+                const res = await fetch('https://hq.sinajs.cn/list=' + code);
                 const text = await res.text();
                 const el = eval(text);
                 const v = el.split(',');
@@ -496,15 +335,17 @@
                 const change = cur - open, pct = ((change/open)*100).toFixed(2);
                 document.getElementById(pid).textContent = cur.toFixed(2);
                 const cls = change>=0?'up':'down', sign = change>=0?'+':'';
-                document.getElementById(cid).innerHTML = `<span class="${cls}">${sign}${change.toFixed(2)}</span><span class="${cls}">(${sign}${pct}%)</span>`;
+                document.getElementById(cid).innerHTML = '<span class="'+cls+'">'+sign+change.toFixed(2)+'</span><span class="'+cls+'">('+sign+pct+'%)</span>';
             } catch(e) {}
         }
+        
         function loadStocks() {
             fetchStock('sh000001','sh000001','sh000001-change');
             fetchStock('sz399001','sz399001','sz399001-change');
             fetchStock('sz399006','sz399006','sz399006-change');
             fetchStock('sh000688','sh000688','sh000688-change');
         }
+        
         loadStocks();
         setInterval(loadStocks, 30000);
     </script>
