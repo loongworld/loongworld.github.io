@@ -453,103 +453,73 @@
         
         // ===== 天气 + 地理位置（基于访问者 IP）=====
         async function fetchWeatherAndLocation() {
-            try {
-                // 第一步：获取访问者 IP 和位置信息
-                const ipRes = await fetch('https://ipapi.co/json/');
-                if (!ipRes.ok) throw new Error('IP API 失败');
-                const ipData = await ipRes.json();
-                
-                // 获取城市、省份、国家
-                const city = ipData.city || '北京';
-                const region = ipData.region || '北京';
-                const country = ipData.country_name || '中国';
-                const lat = ipData.latitude || 39.9042;
-                const lon = ipData.longitude || 116.4074;
-                
-                // 第二步：根据经纬度获取天气
-                const weatherRes = await fetch(
-                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
-                );
-                if (!weatherRes.ok) throw new Error('Weather API 失败');
-                const weatherData = await weatherRes.json();
-                
-                if (weatherData.current_weather) {
-                    const w = weatherData.current_weather;
-                    const icons = {
-                        0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
-                        45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'],
-                        51: ['🌦️', '小雨'], 53: ['🌦️', '中雨'], 55: ['🌦️', '大雨'],
-                        61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
-                        71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'],
-                        80: ['🌦️', '阵雨'], 81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'],
-                        95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
-                    };
-                    const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
-                    
-                    document.getElementById('weatherInfo').innerHTML = `
-                        <div class="weather-location">📍 ${city}${city !== region ? ' · ' + region : ''}</div>
-                        <div class="weather-main">
-                            <span class="weather-icon">${icon}</span>
-                            <span class="weather-temp">${w.temperature}°C</span>
-                        </div>
-                        <div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>
-                    `;
-                    
-                    document.getElementById('weatherExtra').textContent = desc + ' 💨 ' + w.windspeed + 'km/h';
-                }
-            } catch(e) {
-                // 如果 IP 定位失败，尝试备用 API
-                try {
-                    const backupRes = await fetch('https://ipwho.is/');
-                    const backupData = await backupRes.json();
-                    
-                    if (backupData.success) {
-                        const city = backupData.city || '北京';
-                        const lat = backupData.latitude || 39.9042;
-                        const lon = backupData.longitude || 116.4074;
-                        
-                        const weatherRes = await fetch(
-                            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
-                        );
-                        const weatherData = await weatherRes.json();
-                        
-                        if (weatherData.current_weather) {
-                            const w = weatherData.current_weather;
-                            const icons = {
-                                0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
-                                45: ['🌫️', '雾'], 51: ['🌦️', '小雨'], 61: ['🌧️', '小雨'],
-                                71: ['🌨️', '小雪'], 80: ['🌦️', '阵雨'], 95: ['⛈️', '雷雨']
-                            };
-                            const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
-                            
-                            document.getElementById('weatherInfo').innerHTML = `
-                                <div class="weather-location">📍 ${city}</div>
-                                <div class="weather-main">
-                                    <span class="weather-icon">${icon}</span>
-                                    <span class="weather-temp">${w.temperature}°C</span>
-                                </div>
-                                <div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>
-                            `;
-                            return;
-                        }
-                    }
-                } catch(e2) {
-                    // 最终失败，显示默认
-                }
-                
-                document.getElementById('weatherInfo').innerHTML = `
-                    <div class="weather-location">📍 获取位置中...</div>
-                    <div class="weather-main">
-                        <span class="weather-icon">🌡️</span>
-                        <span class="weather-temp">--°C</span>
-                    </div>
-                    <div class="weather-extra">请检查网络</div>
-                `;
-            }
+  try {
+    let city = '北京';
+    let region = '北京';
+    let country = '中国';
+    let lat = 39.9042;
+    let lon = 116.4074;
+    let ipSuccess = false;
+
+    // 尝试主 API
+    try {
+      const ipRes = await fetch('https://ipapi.co/json/');
+      if (ipRes.ok) {
+        const ipData = await ipRes.json();
+        city = ipData.city || '北京';
+        region = ipData.region || '北京';
+        country = ipData.country_name || '中国';
+        lat = ipData.latitude || 39.9042;
+        lon = ipData.longitude || 116.4074;
+        ipSuccess = true;
+      }
+    } catch (e) {
+      console.log('主 IP API 失败');
+    }
+
+    // 备用 API
+    if (!ipSuccess) {
+      try {
+        const backupRes = await fetch('https://ipwho.is/');
+        const backupData = await backupRes.json();
+        if (backupData.success) {
+          city = backupData.city || city;
+          lat = backupData.latitude || lat;
+          lon = backupData.longitude || lon;
+          ipSuccess = true;
         }
-        
-        fetchWeatherAndLocation();
-        setInterval(fetchWeatherAndLocation, 3600000);
+      } catch (e) {
+        console.log('备用 IP API 失败');
+      }
+    }
+
+    // 获取天气
+    if (ipSuccess) {
+      const weatherRes = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
+      );
+      const weatherData = await weatherRes.json();
+      if (weatherData.current_weather) {
+        const w = weatherData.current_weather;
+        const icons = {
+          0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
+          45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'], 51: ['🌦️', '小雨'], 53: ['🌦️', '中雨'],
+          55: ['🌦️', '大雨'], 61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
+          71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'], 80: ['🌦️', '阵雨'],
+          81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'], 95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
+        };
+        const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
+        document.getElementById('weatherInfo').innerHTML = `<div class="weather-location">📍 ${city}${city !== region ? ' · ' + region : ''}</div><div class="weather-main"><span class="weather-icon">${icon}</span><span class="weather-temp">${w.temperature}°C</span></div><div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>`;
+        document.getElementById('weatherExtra').textContent = desc + ' 💨 ' + w.windspeed + 'km/h';
+      }
+    }
+  } catch (e) {
+    console.error('天气获取失败:', e);
+  }
+}
+
+// 每小时更新一次
+setInterval(fetchWeatherAndLocation, 3600000);
     </script>
 </body>
 </html>
