@@ -19,9 +19,32 @@
             color: white;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            padding: 20px;
         }
         
-        /* 天气信息 - 左上角 */
+        /* 动态背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(118, 75, 162, 0.2) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: -1;
+            animation: bgShift 20s ease-in-out infinite;
+        }
+        
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        
+        /* 天气信息 */
         .weather-info {
             position: fixed;
             top: 20px;
@@ -38,6 +61,13 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
             border: 1px solid rgba(255,255,255,0.15);
             z-index: 100;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .weather-info:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.18);
         }
         
         .weather-location {
@@ -58,6 +88,8 @@
         .weather-icon { font-size: 22px; }
         .weather-temp { font-weight: 700; font-size: 20px; }
         .weather-extra { font-size: 11px; opacity: 0.8; }
+        
+        .weather-loading { opacity: 0.6; font-size: 12px; }
         
         /* 时间日期 */
         .datetime-container {
@@ -96,7 +128,38 @@
             font-size: 14px;
         }
         
-        /* 搜索框 */
+        /* 引擎切换 */
+        .search-engine {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+        
+        .engine-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .engine-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .engine-btn.active {
+            background: rgba(255,255,255,0.3);
+            font-weight: 600;
+        }
+        
+        /* 搜索框 - 居中 */
         .search-box {
             position: relative;
             background: rgba(255,255,255,0.98);
@@ -105,9 +168,9 @@
             width: 100%;
             max-width: 580px;
             padding: 8px;
-            margin: 0 20px;
             display: flex;
             align-items: center;
+            margin-top: 20px;
         }
         
         .search-box input {
@@ -157,7 +220,7 @@
             transform: translateY(-50%) scale(0.95);
         }
         
-        /* 每日一言 - 简洁版 */
+        /* 每日一言 */
         .daily-quote {
             max-width: 600px;
             text-align: center;
@@ -171,6 +234,44 @@
             color: rgba(255,255,255,0.9);
             font-weight: 400;
             letter-spacing: 1px;
+        }
+        
+        .quote-loading {
+            opacity: 0.6;
+            font-style: italic;
+        }
+        
+        /* 快捷书签 */
+        .shortcuts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 600px;
+            margin-top: 30px;
+        }
+        
+        .shortcut-item {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .shortcut-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+        
+        .shortcut-icon {
+            font-size: 18px;
         }
         
         /* 底部 */
@@ -188,6 +289,7 @@
             body {
                 justify-content: flex-start;
                 padding-top: 80px;
+                padding-bottom: 60px;
             }
             
             .weather-info {
@@ -199,6 +301,17 @@
             
             .weather-temp { font-size: 17px; }
             .weather-icon { font-size: 19px; }
+            
+            .search-engine {
+                top: 10px;
+                right: 10px;
+                gap: 5px;
+            }
+            
+            .engine-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
             
             .datetime-container {
                 padding: 15px 20px;
@@ -258,6 +371,16 @@
                 line-height: 1.7;
             }
             
+            .shortcuts {
+                gap: 10px;
+                margin-top: 25px;
+            }
+            
+            .shortcut-item {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
             .footer {
                 font-size: 10px;
                 bottom: 10px;
@@ -275,8 +398,15 @@
     </style>
 </head>
 <body>
+    <!-- 引擎切换 -->
+    <div class="search-engine">
+        <button class="engine-btn active" data-engine="baidu" onclick="setEngine('baidu')">百度</button>
+        <button class="engine-btn" data-engine="google" onclick="setEngine('google')">Google</button>
+        <button class="engine-btn" data-engine="bing" onclick="setEngine('bing')">必应</button>
+    </div>
+    
     <!-- 天气信息 -->
-    <div class="weather-info" id="weatherInfo">
+    <div class="weather-info" id="weatherInfo" onclick="refreshWeather()">
         <div class="weather-location">📍 定位中...</div>
         <div class="weather-main">
             <span class="weather-icon">🌡️</span>
@@ -291,10 +421,10 @@
         <div class="date" id="date">加载中...</div>
     </div>
     
-    <!-- 搜索框 - 百度图标 -->
+    <!-- 搜索框 -->
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="百度一下，你就知道" onkeypress="if(event.key==='Enter')doSearch()">
-        <button class="search-btn" onclick="doSearch()" title="百度搜索">
+        <input type="text" id="searchInput" placeholder="输入搜索内容..." onkeypress="if(event.key==='Enter')doSearch()">
+        <button class="search-btn" onclick="doSearch()" title="搜索">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#4E6EF2"/>
             </svg>
@@ -303,8 +433,12 @@
     
     <!-- 每日一言 -->
     <div class="daily-quote">
-        <p class="quote-text" id="quoteText">加载中...</p>
+        <p class="quote-text" id="quoteText">
+            <span class="quote-loading">加载中...</span>
+        </p>
     </div>
+    
+    
     
     <!-- 底部 -->
     <div class="footer">
@@ -312,6 +446,37 @@
     </div>
     
     <script>
+        // ===== 配置 =====
+        let currentEngine = 'baidu';
+        const engines = {
+            baidu: { url: 'https://www.baidu.com/s?wd=', name: '百度' },
+            google: { url: 'https://www.google.com/search?q=', name: 'Google' },
+            bing: { url: 'https://www.bing.com/search?q=', name: '必应' }
+        };
+        
+        // ===== 引擎切换 =====
+        function setEngine(engine) {
+            currentEngine = engine;
+            document.querySelectorAll('.engine-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.engine === engine);
+            });
+            localStorage.setItem('searchEngine', engine);
+        }
+        
+        // 恢复上次选择的引擎
+        const savedEngine = localStorage.getItem('searchEngine');
+        if (savedEngine && engines[savedEngine]) {
+            setEngine(savedEngine);
+        }
+        
+        // ===== 搜索功能 =====
+        function doSearch() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (q) {
+                window.open(engines[currentEngine].url + encodeURIComponent(q), '_blank');
+            }
+        }
+        
         // ===== 农历转换 =====
         const lunarInfo = [
             0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
@@ -421,114 +586,145 @@
         setInterval(updateTime, 1000);
         updateTime();
         
-        // ===== 百度搜索 =====
-        function doSearch() {
-            const q = document.getElementById('searchInput').value.trim();
-            if(q) {
-                window.open('https://www.baidu.com/s?wd=' + encodeURIComponent(q), '_blank');
-            }
-        }
+        // ===== 每日一言（带备用）=====
+        const localQuotes = [
+            '生活不止眼前的苟且，还有诗和远方。',
+            '人生没有彩排，每一天都是现场直播。',
+            '越努力，越幸运。',
+            '心若向阳，无惧悲伤。',
+            '简单生活，快乐自来。',
+            '不忘初心，方得始终。',
+            '未来可期，人间值得。',
+            '当你足够努力，幸运自然会来。',
+            '每一天都是新的开始。',
+            '保持热爱，奔赴山海。'
+        ];
         
-        // ===== 每日一言 =====
         async function fetchQuote() {
+            const el = document.getElementById('quoteText');
             try {
-                const res = await fetch('https://v1.hitokoto.cn/?c=d&c=i&c=k&max_length=50');
-                const data = await res.json();
-                document.getElementById('quoteText').textContent = '"' + data.hitokoto + '"';
-            } catch(e) {
-                const quotes = [
-                    '生活不止眼前的苟且，还有诗和远方。',
-                    '人生没有彩排，每一天都是现场直播。',
-                    '越努力，越幸运。',
-                    '心若向阳，无惧悲伤。',
-                    '简单生活，快乐自来。',
-                    '不忘初心，方得始终。',
-                    '未来可期，人间值得。'
+                // 尝试多个API
+                const apis = [
+                    'https://v1.hitokoto.cn/?c=d&c=i&c=k&max_length=50',
+                    'https://api.mood.lol/api/quote',
+                    'https://duguyi.cn/api/yi'
                 ];
-                const q = quotes[Math.floor(Math.random() * quotes.length)];
-                document.getElementById('quoteText').textContent = '"' + q + '"';
+                
+                for (let api of apis) {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 3000);
+                        
+                        const res = await fetch(api, { signal: controller.signal });
+                        clearTimeout(timeoutId);
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            let text = data.hitokoto || data.quote || data.text || data.content || '';
+                            if (text) {
+                                el.textContent = '"' + text + '"';
+                                return;
+                            }
+                        }
+                    } catch(e) {
+                        console.log('API失败:', api);
+                    }
+                }
+            } catch(e) {
+                console.log('获取一言失败');
             }
+            
+            // 备用本地语录
+            const q = localQuotes[Math.floor(Math.random() * localQuotes.length)];
+            el.textContent = '"' + q + '"';
         }
         fetchQuote();
         
-        // ===== 天气 + 地理位置（基于访问者 IP）=====
-async function fetchWeatherAndLocation() {
-  try {
-    let city = '北京';
-    let region = '北京';
-    let country = '中国';
-    let lat = 39.9042;
-    let lon = 116.4074;
-    let ipSuccess = false;
-
-    // 尝试主 API (ip-api.com 不限流)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      const ipRes = await fetch('https://ip-api.com/json/?lang=zh-CN', {
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-      if (ipRes.ok) {
-        const ipData = await ipRes.json();
-        if (ipData.status === 'success') {
-          city = ipData.city || '北京';
-          region = ipData.regionName || '北京';
-          country = ipData.country || '中国';
-          lat = ipData.lat || 39.9042;
-          lon = ipData.lon || 116.4074;
-          ipSuccess = true;
+        // ===== 天气（带备用）=====
+        async function fetchWeatherAndLocation() {
+            try {
+                let city = '北京';
+                let region = '北京';
+                let lat = 39.9042;
+                let lon = 116.4074;
+                let ipSuccess = false;
+                
+                // 尝试多个IP API
+                const ipApis = [
+                    { url: 'https://ipapi.co/json/', key: 'city' },
+                    { url: 'https://ipwho.is/', key: 'city' }
+                ];
+                
+                for (let ipApi of ipApis) {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
+                        
+                        const res = await fetch(ipApi.url, { signal: controller.signal });
+                        clearTimeout(timeoutId);
+                        
+                        if (res.ok) {
+                            const data = await res.json();
+                            city = data.city || data[ipApi.key] || city;
+                            region = data.region || data.region_name || region;
+                            lat = data.latitude || data.lat || lat;
+                            lon = data.longitude || data.lon || lon;
+                            ipSuccess = true;
+                            break;
+                        }
+                    } catch(e) {
+                        console.log('IP API失败');
+                    }
+                }
+                
+                // 获取天气
+                if (ipSuccess) {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
+                        
+                        const weatherRes = await fetch(
+                            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
+                            { signal: controller.signal }
+                        );
+                        clearTimeout(timeoutId);
+                        
+                        if (weatherRes.ok) {
+                            const weatherData = await weatherRes.json();
+                            if (weatherData.current_weather) {
+                                const w = weatherData.current_weather;
+                                const icons = {
+                                    0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
+                                    45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'], 51: ['🌦️', '小雨'], 53: ['🌦️', '中雨'],
+                                    55: ['🌦️', '大雨'], 61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
+                                    71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'], 80: ['🌦️', '阵雨'],
+                                    81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'], 95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
+                                };
+                                const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
+                                
+                                document.getElementById('weatherInfo').innerHTML = 
+                                    '<div class="weather-location">📍 ' + city + (city !== region ? ' · ' + region : '') + '</div>' +
+                                    '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + w.temperature + '°C</span></div>' +
+                                    '<div class="weather-extra">' + desc + ' 💨 ' + w.windspeed + 'km/h</div>';
+                            }
+                        }
+                    } catch(e) {
+                        console.log('天气API失败');
+                    }
+                }
+            } catch(e) {
+                console.error('天气获取失败:', e);
+            }
         }
-      }
-    } catch (e) {
-      console.log('主 IP API 失败，尝试备用 API');
-    }
-
-    // 如果主 API 失败，尝试备用 API
-    if (!ipSuccess) {
-      try {
-        const backupRes = await fetch('https://ipwho.is/');
-        const backupData = await backupRes.json();
-        if (backupData.success) {
-          city = backupData.city || city;
-          region = backupData.region || region;
-          country = backupData.country || country;
-          lat = backupData.latitude || lat;
-          lon = backupData.longitude || lon;
-          ipSuccess = true;
+        
+        function refreshWeather() {
+            document.getElementById('weatherInfo').innerHTML = 
+                '<div class="weather-loading">🔄 刷新中...</div>';
+            fetchWeatherAndLocation();
         }
-      } catch (e) {
-        console.log('备用 IP API 失败，使用默认值（北京）');
-      }
-    }
-
-    // 第二步：获取天气
-    if (ipSuccess) {
-      try {
-        const weatherRes = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`
-        );
-        if (weatherRes.ok) {
-          const weatherData = await weatherRes.json();
-          if (weatherData.current_weather) {
-            const w = weatherData.current_weather;
-            const icons = {
-              0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
-              45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'], 51: ['🌦️', '小雨'], 53: ['🌦️', '中雨'],
-              55: ['🌦️', '大雨'], 61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
-              71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'], 80: ['🌦️', '阵雨'],
-              81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'], 95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
-            };
-            const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
-            document.getElementById('weatherInfo').innerHTML = `<div class="weather-location">📍 ${city}${city !== region ? ' · ' + region : ''}</div><div class="weather-main"><span class="weather-icon">${icon}</span><span class="weather-temp">${w.temperature}°C</span></div><div class="weather-extra">${desc} 💨 ${w.windspeed}km/h</div>`;
-            document.getElementById('weatherExtra').textContent = desc + ' 💨 ' + w.windspeed + 'km/h';
-          }
-        }
-      } catch (e) {
-        console.log('天气 API 失败');
-      }
-    }
-  } catch (e) {
-    console.error('天气获取完全失败:', e);
-  }
-}
+        
+        // 初始化天气
+        fetchWeatherAndLocation();
+    </script>
+</body>
+</html>
