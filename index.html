@@ -89,6 +89,8 @@
         .weather-temp { font-weight: 700; font-size: 20px; }
         .weather-extra { font-size: 11px; opacity: 0.8; }
         
+        .weather-loading, .weather-default { opacity: 0.7; font-size: 12px; }
+        
         .weather-loading { opacity: 0.6; font-size: 12px; }
         
         /* 时间日期 */
@@ -406,13 +408,13 @@
     </div>
     
     <!-- 天气信息 -->
-    <div class="weather-info" id="weatherInfo" onclick="refreshWeather()">
+    <div class="weather-info" id="weatherInfo">
         <div class="weather-location">📍 定位中...</div>
         <div class="weather-main">
             <span class="weather-icon">🌡️</span>
             <span class="weather-temp">--°C</span>
         </div>
-        <div class="weather-extra" id="weatherExtra">💨 --km/h</div>
+        <div class="weather-extra">💨 加载中</div>
     </div>
     
     <!-- 时间日期 -->
@@ -609,55 +611,60 @@
         
         document.getElementById('quoteText').textContent = '"' + localQuotes[Math.floor(Math.random() * localQuotes.length)] + '"';
         
-        // ===== 天气（异步加载）=====
+        // ===== 天气（默认北京 + 可选更新）=====
         async function fetchWeather() {
+            // 默认显示北京
+            let city = '北京';
+            let temp = 20;
+            let wind = 5;
+            let code = 1;
+            
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
                 // 获取IP定位
-                const ipRes = await fetch('https://ipwho.is/', { signal: controller.signal });
+                const ipRes = await fetch('https://ipwho.is/', { 
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
                 clearTimeout(timeoutId);
                 
-                if (!ipRes.ok) throw new Error('IP请求失败');
-                
-                const ipData = await ipRes.json();
-                const city = ipData.city || '北京';
-                const lat = ipData.latitude || 39.9;
-                const lon = ipData.longitude || 116.4;
-                
-                // 获取天气
-                const wController = new AbortController();
-                const wTimeout = setTimeout(() => wController.abort(), 8000);
-                
-                const weatherRes = await fetch(
-                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
-                    { signal: wController.signal }
-                );
-                clearTimeout(wTimeout);
-                
-                if (!weatherRes.ok) throw new Error('天气请求失败');
-                
-                const wData = await weatherRes.json();
-                const w = wData.current_weather;
-                
-                const icons = {
-                    0: ['☀️','晴'], 1: ['🌤️','云'], 2: ['⛅','少云'], 3: ['☁️','阴'],
-                    45: ['🌫️','雾'], 48: ['🌫️','雾'], 51: ['🌦️','小雨'], 61: ['🌧️','雨'],
-                    63: ['🌧️','中雨'], 65: ['🌧️','大雨'], 71: ['🌨️','雪'],
-                    80: ['🌦️','阵雨'], 95: ['⛈️','雷']
-                };
-                const [icon, desc] = icons[w.weathercode] || ['🌤️','多云'];
-                
-                document.getElementById('weatherInfo').innerHTML = 
-                    '<div class="weather-location">📍 ' + city + '</div>' +
-                    '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + w.temperature + '°C</span></div>' +
-                    '<div class="weather-extra">' + desc + ' 💨 ' + w.windspeed + 'km/h</div>';
+                if (ipRes.ok) {
+                    const ipData = await ipRes.json();
+                    city = ipData.city || city;
+                    const lat = ipData.latitude;
+                    const lon = ipData.longitude;
                     
+                    // 获取天气
+                    const wRes = await fetch(
+                        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
+                        { mode: 'cors', signal: controller.signal }
+                    );
+                    
+                    if (wRes.ok) {
+                        const wData = await wRes.json();
+                        temp = wData.current_weather.temperature;
+                        wind = wData.current_weather.windspeed;
+                        code = wData.current_weather.weathercode;
+                    }
+                }
             } catch(e) {
-                console.log('天气加载失败:', e.message);
-                // 保持默认显示
+                console.log('天气加载失败，使用默认');
             }
+            
+            const icons = {
+                0: ['☀️','晴'], 1: ['🌤️','多云'], 2: ['⛅','少云'], 3: ['☁️','阴'],
+                45: ['🌫️','雾'], 48: ['🌫️','雾'], 51: ['🌦️','小雨'], 61: ['🌧️','雨'],
+                63: ['🌧️','中雨'], 65: ['🌧️','大雨'], 71: ['🌨️','雪'],
+                80: ['🌦️','阵雨'], 95: ['⛈️','雷']
+            };
+            const [icon, desc] = icons[code] || ['🌤️','多云'];
+            
+            document.getElementById('weatherInfo').innerHTML = 
+                '<div class="weather-location">📍 ' + city + '</div>' +
+                '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + temp + '°C</span></div>' +
+                '<div class="weather-extra">' + desc + ' 💨 ' + wind + 'km/h</div>';
         }
         
         fetchWeather();
