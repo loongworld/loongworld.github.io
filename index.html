@@ -561,170 +561,106 @@
             return { year: yearGanZhi, month: monthStr, day: dayStr };
         }
         
-        // ===== 时间功能 =====
-        function updateTime() {
+// ===== 天气 + 农历（简化版 - 直接显示不依赖API）=====
+        function initWeatherAndDate() {
             const now = new Date();
+            
+            // 时间
             document.getElementById('time').textContent = 
                 String(now.getHours()).padStart(2,'0') + ':' +
                 String(now.getMinutes()).padStart(2,'0') + ':' +
                 String(now.getSeconds()).padStart(2,'0');
             
-            // 公历年月日
+            // 公历日期
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             const weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
             const week = weekDays[now.getDay()];
             
-            // 农历
-            const lunar = dateToLunar(now);
+            document.getElementById('date').textContent = 
+                year + '年' + month + '月' + day + '日 ' + week;
             
-            document.getElementById('date').innerHTML = 
-                year + '年' + month + '月' + day + '日 ' + week +
-                '<span class="date-lunar">' + lunar.year + lunar.month + lunar.day + '</span>';
+            // 农历（简化）
+            const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+            const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+            const lunarYear = tianGan[(year - 4) % 10] + diZhi[(year - 4) % 12] + '年';
+            const lunarMonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
+            const monthName = lunarMonths[now.getMonth()];
+            const lunarDay = ['初','十','廿','卅'][Math.floor((now.getDate()-1)/10)] + ['','一','二','三','四','五','六','七','八','九','十'][Math.floor((now.getDate()-1)%10)];
+            
+            document.getElementById('date').innerHTML += 
+                '<span class="date-lunar">' + lunarYear + monthName + '月' + lunarDay + '</span>';
         }
-        setInterval(updateTime, 1000);
-        updateTime();
         
-        // ===== 每日一言（带备用）=====
+        setInterval(initWeatherAndDate, 1000);
+        initWeatherAndDate();
+        
+        // ===== 每日一言（本地备用优先）=====
         const localQuotes = [
             '生活不止眼前的苟且，还有诗和远方。',
-            '人生没有彩排，每一天都是现场直播。',
             '越努力，越幸运。',
-            '心若向阳，无惧悲伤。',
-            '简单生活，快乐自来。',
-            '不忘初心，方得始终。',
             '未来可期，人间值得。',
+            '保持热爱，奔赴山海。',
             '当你足够努力，幸运自然会来。',
             '每一天都是新的开始。',
-            '保持热爱，奔赴山海。'
+            '不忘初心，方得始终。'
         ];
         
-        async function fetchQuote() {
-            const el = document.getElementById('quoteText');
-            try {
-                // 尝试多个API
-                const apis = [
-                    'https://v1.hitokoto.cn/?c=d&c=i&c=k&max_length=50',
-                    'https://api.mood.lol/api/quote',
-                    'https://duguyi.cn/api/yi'
-                ];
-                
-                for (let api of apis) {
-                    try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 3000);
-                        
-                        const res = await fetch(api, { signal: controller.signal });
-                        clearTimeout(timeoutId);
-                        
-                        if (res.ok) {
-                            const data = await res.json();
-                            let text = data.hitokoto || data.quote || data.text || data.content || '';
-                            if (text) {
-                                el.textContent = '"' + text + '"';
-                                return;
-                            }
-                        }
-                    } catch(e) {
-                        console.log('API失败:', api);
-                    }
-                }
-            } catch(e) {
-                console.log('获取一言失败');
-            }
-            
-            // 备用本地语录
-            const q = localQuotes[Math.floor(Math.random() * localQuotes.length)];
-            el.textContent = '"' + q + '"';
-        }
-        fetchQuote();
+        document.getElementById('quoteText').textContent = '"' + localQuotes[Math.floor(Math.random() * localQuotes.length)] + '"';
         
-        // ===== 天气（带备用）=====
-        async function fetchWeatherAndLocation() {
+        // ===== 天气（异步加载）=====
+        async function fetchWeather() {
             try {
-                let city = '北京';
-                let region = '北京';
-                let lat = 39.9042;
-                let lon = 116.4074;
-                let ipSuccess = false;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
                 
-                // 尝试多个IP API
-                const ipApis = [
-                    { url: 'https://ipapi.co/json/', key: 'city' },
-                    { url: 'https://ipwho.is/', key: 'city' }
-                ];
+                // 获取IP定位
+                const ipRes = await fetch('https://ipwho.is/', { signal: controller.signal });
+                clearTimeout(timeoutId);
                 
-                for (let ipApi of ipApis) {
-                    try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 5000);
-                        
-                        const res = await fetch(ipApi.url, { signal: controller.signal });
-                        clearTimeout(timeoutId);
-                        
-                        if (res.ok) {
-                            const data = await res.json();
-                            city = data.city || data[ipApi.key] || city;
-                            region = data.region || data.region_name || region;
-                            lat = data.latitude || data.lat || lat;
-                            lon = data.longitude || data.lon || lon;
-                            ipSuccess = true;
-                            break;
-                        }
-                    } catch(e) {
-                        console.log('IP API失败');
-                    }
-                }
+                if (!ipRes.ok) throw new Error('IP请求失败');
+                
+                const ipData = await ipRes.json();
+                const city = ipData.city || '北京';
+                const lat = ipData.latitude || 39.9;
+                const lon = ipData.longitude || 116.4;
                 
                 // 获取天气
-                if (ipSuccess) {
-                    try {
-                        const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 5000);
-                        
-                        const weatherRes = await fetch(
-                            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
-                            { signal: controller.signal }
-                        );
-                        clearTimeout(timeoutId);
-                        
-                        if (weatherRes.ok) {
-                            const weatherData = await weatherRes.json();
-                            if (weatherData.current_weather) {
-                                const w = weatherData.current_weather;
-                                const icons = {
-                                    0: ['☀️', '晴朗'], 1: ['🌤️', '多云'], 2: ['⛅', '少云'], 3: ['☁️', '阴天'],
-                                    45: ['🌫️', '雾'], 48: ['🌫️', '雾凇'], 51: ['🌦️', '小雨'], 53: ['🌦️', '中雨'],
-                                    55: ['🌦️', '大雨'], 61: ['🌧️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
-                                    71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['🌨️', '大雪'], 80: ['🌦️', '阵雨'],
-                                    81: ['🌧️', '中雨'], 82: ['⛈️', '暴雨'], 95: ['⛈️', '雷雨'], 96: ['⛈️', '雷阵雨'], 99: ['⛈️', '大暴雨']
-                                };
-                                const [icon, desc] = icons[w.weathercode] || ['🌤️', '多云'];
-                                
-                                document.getElementById('weatherInfo').innerHTML = 
-                                    '<div class="weather-location">📍 ' + city + (city !== region ? ' · ' + region : '') + '</div>' +
-                                    '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + w.temperature + '°C</span></div>' +
-                                    '<div class="weather-extra">' + desc + ' 💨 ' + w.windspeed + 'km/h</div>';
-                            }
-                        }
-                    } catch(e) {
-                        console.log('天气API失败');
-                    }
-                }
+                const wController = new AbortController();
+                const wTimeout = setTimeout(() => wController.abort(), 8000);
+                
+                const weatherRes = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
+                    { signal: wController.signal }
+                );
+                clearTimeout(wTimeout);
+                
+                if (!weatherRes.ok) throw new Error('天气请求失败');
+                
+                const wData = await weatherRes.json();
+                const w = wData.current_weather;
+                
+                const icons = {
+                    0: ['☀️','晴'], 1: ['🌤️','云'], 2: ['⛅','少云'], 3: ['☁️','阴'],
+                    45: ['🌫️','雾'], 48: ['🌫️','雾'], 51: ['🌦️','小雨'], 61: ['🌧️','雨'],
+                    63: ['🌧️','中雨'], 65: ['🌧️','大雨'], 71: ['🌨️','雪'],
+                    80: ['🌦️','阵雨'], 95: ['⛈️','雷']
+                };
+                const [icon, desc] = icons[w.weathercode] || ['🌤️','多云'];
+                
+                document.getElementById('weatherInfo').innerHTML = 
+                    '<div class="weather-location">📍 ' + city + '</div>' +
+                    '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + w.temperature + '°C</span></div>' +
+                    '<div class="weather-extra">' + desc + ' 💨 ' + w.windspeed + 'km/h</div>';
+                    
             } catch(e) {
-                console.error('天气获取失败:', e);
+                console.log('天气加载失败:', e.message);
+                // 保持默认显示
             }
         }
         
-        function refreshWeather() {
-            document.getElementById('weatherInfo').innerHTML = 
-                '<div class="weather-loading">🔄 刷新中...</div>';
-            fetchWeatherAndLocation();
-        }
-        
-        // 初始化天气
-        fetchWeatherAndLocation();
+        fetchWeather();
     </script>
 </body>
 </html>
