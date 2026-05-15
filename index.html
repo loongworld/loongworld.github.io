@@ -198,476 +198,181 @@
             transform: translateY(-50%);
             background: transparent;
             border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
             cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 50%;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .search-box .search-btn svg {
-            width: 28px;
-            height: 28px;
         }
         
         .search-box .search-btn:hover {
-            transform: translateY(-50%) scale(1.08);
+            background: rgba(0,0,0,0.05);
         }
         
-        .search-box .search-btn:active {
-            transform: translateY(-50%) scale(0.95);
+        .search-box .search-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #666;
         }
         
-        /* 每日一言 */
-        .daily-quote {
-            max-width: 600px;
-            text-align: center;
-            padding: 20px 25px;
-            margin: 35px 20px 0;
-        }
-        
-        .quote-text {
-            font-size: 15px;
-            line-height: 1.8;
-            color: rgba(255,255,255,0.9);
-            font-weight: 400;
-            letter-spacing: 1px;
-        }
-        
-        .quote-loading {
-            opacity: 0.6;
-            font-style: italic;
-        }
-        
-        /* 快捷书签 */
-        .shortcuts {
+        /* 快捷导航 */
+        .quick-nav {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            max-width: 600px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .shortcut-item {
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 12px;
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
+        .quick-nav a {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            text-decoration: none;
+            font-size: 13px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
         }
         
-        .shortcut-item:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-3px);
-        }
-        
-        .shortcut-icon {
-            font-size: 18px;
+        .quick-nav a:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
         }
         
         /* 底部 */
         .footer {
             position: fixed;
-            bottom: 15px;
-            font-size: 11px;
-            opacity: 0.5;
-            text-align: center;
-            letter-spacing: 1px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            opacity: 0.6;
         }
         
         /* 手机端优化 */
         @media (max-width: 768px) {
-            body {
-                justify-content: flex-start;
-                padding-top: 80px;
-                padding-bottom: 60px;
-            }
-            
-            .weather-info {
-                top: 10px;
-                left: 10px;
-                padding: 10px 14px;
-                min-width: 130px;
-            }
-            
-            .weather-temp { font-size: 17px; }
-            .weather-icon { font-size: 19px; }
-            
-            .search-engine {
-                top: 10px;
-                right: 10px;
-                gap: 5px;
-            }
-            
-            .engine-btn {
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-            
-            .datetime-container {
-                padding: 15px 20px;
-                margin-bottom: 30px;
-            }
-            
-            .time {
-                font-size: 52px;
-                letter-spacing: 4px;
-                font-weight: 600;
-            }
-            
-            .date {
-                font-size: 13px;
-                letter-spacing: 1px;
-                margin-top: 10px;
-                display: block;
-            }
-            
-            .date-lunar {
-                display: block;
-                margin-left: 0;
-                margin-top: 6px;
-                font-size: 13px;
-            }
-            
-            .search-box {
-                max-width: calc(100% - 30px);
-                padding: 6px;
-                margin: 0 15px;
-            }
-            
-            .search-box input {
-                padding: 14px 16px;
-                padding-right: 55px;
-                font-size: 16px;
-            }
-            
-            .search-box .search-btn {
-                width: 38px;
-                height: 38px;
-                right: 8px;
-            }
-            
-            .search-box .search-btn svg {
-                width: 24px;
-                height: 24px;
-            }
-            
-            .daily-quote {
-                padding: 15px 18px;
-                margin: 25px 15px 0;
-            }
-            
-            .quote-text {
-                font-size: 14px;
-                line-height: 1.7;
-            }
-            
-            .shortcuts {
-                gap: 10px;
-                margin-top: 25px;
-            }
-            
-            .shortcut-item {
-                padding: 10px 15px;
-                font-size: 13px;
-            }
-            
-            .footer {
-                font-size: 10px;
-                bottom: 10px;
-            }
-        }
-        
-        /* 小屏幕手机 */
-        @media (max-width: 400px) {
-            .time { font-size: 44px; letter-spacing: 2px; }
-            .date { font-size: 12px; }
-            .date-lunar { font-size: 11px; }
-            .weather-info { font-size: 11px; }
-            .weather-temp { font-size: 16px; }
+            .time { font-size: 64px; }
+            .date { font-size: 13px; }
+            .search-box { max-width: 90%; }
+            .quick-nav { gap: 8px; }
+            .quick-nav a { padding: 6px 12px; font-size: 12px; }
         }
     </style>
 </head>
 <body>
-    <!-- 引擎切换 -->
-    <div class="search-engine">
-        <button class="engine-btn active" data-engine="baidu" onclick="setEngine('baidu')">百度</button>
-        <button class="engine-btn" data-engine="google" onclick="setEngine('google')">Google</button>
-        <button class="engine-btn" data-engine="bing" onclick="setEngine('bing')">必应</button>
+    <!-- 天气信息 -->
+    <div class="weather-info" onclick="openWeather()">
+        <div class="weather-location">
+            <span class="weather-icon">🌤️</span>
+            <span>加载中...</span>
+        </div>
+        <div class="weather-main">
+            <span class="weather-temp">--°</span>
+            <span class="weather-extra">--</span>
+        </div>
+        <div class="weather-loading">正在获取天气数据...</div>
     </div>
     
-    <!-- 天气信息 -->
-    <div class="weather-info" id="weatherInfo">
-        <div class="weather-location">📍 定位中...</div>
-        <div class="weather-main">
-            <span class="weather-icon">🌡️</span>
-            <span class="weather-temp">--°C</span>
-        </div>
-        <div class="weather-extra">💨 加载中</div>
+    <!-- 引擎切换 -->
+    <div class="search-engine">
+        <button class="engine-btn active" onclick="setEngine('baidu')">百度</button>
+        <button class="engine-btn" onclick="setEngine('bing')">Bing</button>
+        <button class="engine-btn" onclick="setEngine('google')">Google</button>
     </div>
     
     <!-- 时间日期 -->
-    <div class="datetime-container" onclick="window.open('central/', '_blank')" title="点击打开综合导航">
-        <div class="time" id="time">00:00:00</div>
-        <div class="date" id="date">加载中...</div>
+    <div class="datetime-container" onclick="copyTime()">
+        <div class="time" id="time">00:00</div>
+        <div class="date">
+            <span id="date">--年--月--日</span>
+            <span class="date-lunar" id="lunar">--</span>
+        </div>
     </div>
     
     <!-- 搜索框 -->
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="输入搜索内容..." onkeypress="if(event.key==='Enter')doSearch()">
-        <button class="search-btn" onclick="doSearch()" title="搜索">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#4E6EF2"/>
-            </svg>
+        <input type="text" id="search-input" placeholder="搜索..." onkeypress="handleKeyPress(event)">
+        <button class="search-btn" onclick="search()">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         </button>
     </div>
     
-    <!-- 每日一言 -->
-    <div class="daily-quote">
-        <p class="quote-text" id="quoteText">
-            <span class="quote-loading">加载中...</span>
-        </p>
+    <!-- 快捷导航 -->
+    <div class="quick-nav">
+        <a href="https://book.douban.com/" target="_blank">📚 微信读书</a>
+        <a href="https://www.zcool.com.cn/" target="_blank">🎨 站酷</a>
+        <a href="https://www.yuque.com/" target="_blank">📝 语雀</a>
+        <a href="https://sspai.com/" target="_blank">💡 少数派</a>
+        <a href="https://cli.im/" target="_blank">🛠️ 草料二维码</a>
     </div>
-    
-    
     
     <!-- 底部 -->
-    <div class="footer">
-        🌹 万里千寻 · 龙哥的起始页
-    </div>
+    <div class="footer">🌹 万里千寻 · 龙哥的起始页</div>
     
     <script>
-        // ===== 配置 =====
+        // 当前引擎
         let currentEngine = 'baidu';
         const engines = {
             baidu: { url: 'https://www.baidu.com/s?wd=', name: '百度' },
-            google: { url: 'https://www.google.com/search?q=', name: 'Google' },
-            bing: { url: 'https://www.bing.com/search?q=', name: '必应' }
+            bing: { url: 'https://www.bing.com/search?q=', name: 'Bing' },
+            google: { url: 'https://www.google.com/search?q=', name: 'Google' }
         };
         
-        // ===== 引擎切换 =====
+        // 引擎切换
         function setEngine(engine) {
             currentEngine = engine;
-            document.querySelectorAll('.engine-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.engine === engine);
-            });
-            localStorage.setItem('searchEngine', engine);
+            document.querySelectorAll('.engine-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
         }
         
-        // 恢复上次选择的引擎
-        const savedEngine = localStorage.getItem('searchEngine');
-        if (savedEngine && engines[savedEngine]) {
-            setEngine(savedEngine);
-        }
-        
-        // ===== 搜索功能 =====
-        function doSearch() {
-            const q = document.getElementById('searchInput').value.trim();
-            if (q) {
-                window.open(engines[currentEngine].url + encodeURIComponent(q), '_blank');
+        // 搜索
+        function search() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query) {
+                window.open(engines[currentEngine].url + encodeURIComponent(query), '_blank');
             }
         }
         
-        // ===== 农历转换 =====
-        const lunarInfo = [
-            0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
-            0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
-            0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
-            0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
-            0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
-            0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
-            0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
-            0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
-            0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
-            0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
-            0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
-            0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
-            0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
-            0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
-            0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0
-        ];
-        
-        const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-        const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-        const lunarMonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
-        
-        function getLunarYear(year) {
-            return tianGan[(year - 4) % 10] + diZhi[(year - 4) % 12] + '年';
+        // 回车搜索
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') search();
         }
         
-        function lunarDay(day) {
-            const nStr1 = ['初','十','廿','卅'];
-            const nStr2 = ['','十','二十','三十'];
-            if (day === 10) return '初十';
-            if (day === 20) return '二十';
-            if (day === 30) return '三十';
-            return nStr1[Math.floor((day-1)/10)] + nStr2[(day-1)%10];
-        }
-        
-        function dateToLunar(date) {
-            let year = date.getFullYear();
-            let month = date.getMonth() + 1;
-            let day = date.getDate();
-            
-            let offset = (Date.UTC(year, month-1, day) - Date.UTC(1900, 0, 31)) / 86400000;
-            let lunarYear, lunarMonth, lunarDay;
-            
-            for (let i = 0; i < lunarInfo.length; i++) {
-                let days = (lunarInfo[i] & 0x0f) === 0x0f ? 384 : 354;
-                if (offset <= days) {
-                    lunarYear = 1900 + i;
-                    break;
-                }
-                offset -= days;
-            }
-            
-            let isLeap = false;
-            let leapMonth = (lunarInfo[lunarYear - 1900] >> 4) & 0x0f;
-            
-            for (let i = 0; i <= 12; i++) {
-                let monthDays = ((lunarInfo[lunarYear - 1900] >> (15 - i)) & 0x01) === 1 ? 30 : 29;
-                if (i === leapMonth) {
-                    isLeap = true;
-                    let leapDays = ((lunarInfo[lunarYear - 1900] >> (15 - i - 1)) & 0x01) === 1 ? 30 : 29;
-                    if (offset < leapDays) {
-                        lunarMonth = i;
-                        lunarDay = Math.floor(offset) + 1;
-                        isLeap = true;
-                        break;
-                    }
-                    offset -= leapDays;
-                }
-                if (offset < monthDays) {
-                    lunarMonth = i;
-                    lunarDay = Math.floor(offset) + 1;
-                    break;
-                }
-                offset -= monthDays;
-            }
-            
-            const yearGanZhi = getLunarYear(lunarYear);
-            const monthStr = (isLeap ? '闰' : '') + lunarMonths[lunarMonth - 1] + '月';
-            const dayStr = lunarDay(lunarDay);
-            
-            return { year: yearGanZhi, month: monthStr, day: dayStr };
-        }
-        
-// ===== 天气 + 农历（简化版 - 直接显示不依赖API）=====
-        function initWeatherAndDate() {
+        // 更新时间
+        function updateTime() {
             const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}`;
             
-            // 时间
-            document.getElementById('time').textContent = 
-                String(now.getHours()).padStart(2,'0') + ':' +
-                String(now.getMinutes()).padStart(2,'0') + ':' +
-                String(now.getSeconds()).padStart(2,'0');
-            
-            // 公历日期
             const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-            const week = weekDays[now.getDay()];
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            document.getElementById('date').textContent = `${year}年${month}月${day}日`;
             
-            document.getElementById('date').textContent = 
-                year + '年' + month + '月' + day + '日 ' + week;
-            
-            // 农历（简化）
-            const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-            const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-            const lunarYear = tianGan[(year - 4) % 10] + diZhi[(year - 4) % 12] + '年';
-            const lunarMonths = ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
-            const monthName = lunarMonths[now.getMonth()];
-            const lunarDay = ['初','十','廿','卅'][Math.floor((now.getDate()-1)/10)] + ['','一','二','三','四','五','六','七','八','九','十'][Math.floor((now.getDate()-1)%10)];
-            
-            document.getElementById('date').innerHTML += 
-                '<span class="date-lunar">' + lunarYear + monthName + '月' + lunarDay + '</span>';
+            // 简单农历（这里用占位，实际可调用 API）
+            document.getElementById('lunar').textContent = '农历查询中...';
         }
         
-        setInterval(initWeatherAndDate, 1000);
-        initWeatherAndDate();
-        
-        // ===== 每日一言（本地备用优先）=====
-        const localQuotes = [
-            '生活不止眼前的苟且，还有诗和远方。',
-            '越努力，越幸运。',
-            '未来可期，人间值得。',
-            '保持热爱，奔赴山海。',
-            '当你足够努力，幸运自然会来。',
-            '每一天都是新的开始。',
-            '不忘初心，方得始终。'
-        ];
-        
-        document.getElementById('quoteText').textContent = '"' + localQuotes[Math.floor(Math.random() * localQuotes.length)] + '"';
-        
-        // ===== 天气（默认北京 + 可选更新）=====
-        async function fetchWeather() {
-            // 默认显示北京
-            let city = '北京';
-            let temp = 20;
-            let wind = 5;
-            let code = 1;
-            
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                // 获取IP定位
-                const ipRes = await fetch('https://ipwho.is/', { 
-                    signal: controller.signal,
-                    mode: 'cors'
-                });
-                clearTimeout(timeoutId);
-                
-                if (ipRes.ok) {
-                    const ipData = await ipRes.json();
-                    city = ipData.city || city;
-                    const lat = ipData.latitude;
-                    const lon = ipData.longitude;
-                    
-                    // 获取天气
-                    const wRes = await fetch(
-                        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&windspeed_unit=kmh`,
-                        { mode: 'cors', signal: controller.signal }
-                    );
-                    
-                    if (wRes.ok) {
-                        const wData = await wRes.json();
-                        temp = wData.current_weather.temperature;
-                        wind = wData.current_weather.windspeed;
-                        code = wData.current_weather.weathercode;
-                    }
-                }
-            } catch(e) {
-                console.log('天气加载失败，使用默认');
-            }
-            
-            const icons = {
-                0: ['☀️','晴'], 1: ['🌤️','多云'], 2: ['⛅','少云'], 3: ['☁️','阴'],
-                45: ['🌫️','雾'], 48: ['🌫️','雾'], 51: ['🌦️','小雨'], 61: ['🌧️','雨'],
-                63: ['🌧️','中雨'], 65: ['🌧️','大雨'], 71: ['🌨️','雪'],
-                80: ['🌦️','阵雨'], 95: ['⛈️','雷']
-            };
-            const [icon, desc] = icons[code] || ['🌤️','多云'];
-            
-            document.getElementById('weatherInfo').innerHTML = 
-                '<div class="weather-location">📍 ' + city + '</div>' +
-                '<div class="weather-main"><span class="weather-icon">' + icon + '</span><span class="weather-temp">' + temp + '°C</span></div>' +
-                '<div class="weather-extra">' + desc + ' 💨 ' + wind + 'km/h</div>';
+        // 复制时间
+        function copyTime() {
+            const time = document.getElementById('time').textContent;
+            navigator.clipboard.writeText(time);
+            alert(`已复制：${time}`);
         }
         
-        fetchWeather();
+        // 打开天气
+        function openWeather() {
+            window.open('https://tianqi.2345.com/', '_blank');
+        }
+        
+        // 初始化
+        updateTime();
+        setInterval(updateTime, 1000);
     </script>
 </body>
 </html>
