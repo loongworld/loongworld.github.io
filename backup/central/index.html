@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>综合导航 - 万里千寻</title>
+    <link rel="icon" href="../favicon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: white;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-nav a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        
+        /* 主内容区 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* 页面标题 */
+        .page-title {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+        
+        .page-title h1 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00d9ff, #00ff88, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-title p {
+            font-size: 15px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* 导航分类 */
+        .category {
+            margin-bottom: 38px;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .category-icon {
+            font-size: 26px;
+        }
+        
+        .category-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: #00d9ff;
+        }
+        
+        /* 链接网格 */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+        
+        .link-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+        
+        .link-card:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(0,217,255,0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(0,217,255,0.2);
+        }
+        
+        .link-icon {
+            font-size: 22px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        
+        .link-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .link-name {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .link-desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 35px 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 50px;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(0,217,255,0.4);
+            z-index: 999;
+            font-size: 20px;
+        }
+        
+        .back-to-top.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 手机端优化 */
+        @media (max-width: 768px) {
+            .header { padding: 14px 16px; }
+            .logo { font-size: 19px; }
+            .header-nav { gap: 12px; }
+            .header-nav a { font-size: 13px; padding: 5px 10px; }
+            .container { padding: 25px 14px; }
+            .page-title { margin-bottom: 35px; }
+            .page-title h1 { font-size: 30px; }
+            .page-title p { font-size: 13px; }
+            .category { margin-bottom: 30px; }
+            .category-header { margin-bottom: 15px; }
+            .category-icon { font-size: 22px; }
+            .category-title { font-size: 17px; }
+            .links-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 11px; }
+            .link-card { padding: 13px; gap: 9px; }
+            .link-icon { font-size: 20px; width: 34px; height: 34px; }
+            .link-name { font-size: 14px; }
+            .link-desc { font-size: 11px; }
+            .footer { padding: 25px 16px; font-size: 12px; }
+            .back-to-top { width: 44px; height: 44px; font-size: 18px; bottom: 20px; right: 20px; }
+        }
+        
+        /* 小屏幕手机 */
+        @media (max-width: 400px) {
+            .logo { font-size: 17px; }
+            .header-nav a { font-size: 12px; }
+            .page-title h1 { font-size: 26px; }
+            .links-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .link-name { font-size: 13px; }
+            .link-desc { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="logo">🌹 万里千寻</div>
+        <nav class="header-nav">
+            <a href="../">🏠 首页</a>
+            <a href="#finance">💰 财经</a>
+            <a href="#news">📰 新闻</a>
+            <a href="#video">🎬 视频</a>
+            <a href="#tools">🛠️ 工具</a>
+        </nav>
+    </header>
+    
+    <!-- 主内容 -->
+    <main class="container">
+        <!-- 页面标题 -->
+        <div class="page-title">
+            <h1>综合导航</h1>
+            <p>精心收录的优质网站，一网打尽</p>
+        </div>
+        
+        <!-- 财经 -->
+        <section class="category" id="finance">
+            <div class="category-header">
+                <span class="category-icon">💰</span>
+                <h2 class="category-title">财经股票</h2>
+            </div>
+            <div class="links-grid">
+                <a href="https://www.jisilu.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">📊</div>
+                    <div class="link-info">
+                        <div class="link-name">集思录</div>
+                        <div class="link-desc">债券基金数据</div>
+                    </div>
+                </a>
+                <a href="https://www.investing.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🌐</div>
+                    <div class="link-info">
+                        <div class="link-name">Investing.com</div>
+                        <div class="link-desc">全球财经数据</div>
+                    </div>
+                </a>
+                <a href="https://www.tradingview.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📈</div>
+                    <div class="link-info">
+                        <div class="link-name">TradingView</div>
+                        <div class="link-desc">专业图表分析</div>
+                    </div>
+                </a>
+                <a href="https://www.dazhihui.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🐟</div>
+                    <div class="link-info">
+                        <div class="link-name">大智慧</div>
+                        <div class="link-desc">智能投资平台</div>
+                    </div>
+                </a>
+                <a href="https://www.luobo.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🥕</div>
+                    <div class="link-info">
+                        <div class="link-name">萝卜投研</div>
+                        <div class="link-desc">AI智能投研</div>
+                    </div>
+                </a>
+                <a href="https://quote.eastmoney.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📱</div>
+                    <div class="link-info">
+                        <div class="link-name">东方财富</div>
+                        <div class="link-desc">综合金融门户</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- 新闻 -->
+        <section class="category" id="news">
+            <div class="category-header">
+                <span class="category-icon">📰</span>
+                <h2 class="category-title">新闻资讯</h2>
+            </div>
+            <div class="links-grid">
+                <a href="https://www.jiemian.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📑</div>
+                    <div class="link-info">
+                        <div class="link-name">界面新闻</div>
+                        <div class="link-desc">商业深度报道</div>
+                    </div>
+                </a>
+                <a href="https://www.cls.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">⚡</div>
+                    <div class="link-info">
+                        <div class="link-name">财联社</div>
+                        <div class="link-desc">7x24快讯</div>
+                    </div>
+                </a>
+                <a href="https://wanpoint.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🕯️</div>
+                    <div class="link-info">
+                        <div class="link-name">晚点</div>
+                        <div class="link-desc">深度商业报道</div>
+                    </div>
+                </a>
+                <a href="https://www.huxiu.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🐅</div>
+                    <div class="link-info">
+                        <div class="link-name">虎嗅</div>
+                        <div class="link-desc">科技财经</div>
+                    </div>
+                </a>
+                <a href="https://www.36kr.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🦹</div>
+                    <div class="link-info">
+                        <div class="link-name">36氪</div>
+                        <div class="link-desc">创业资讯</div>
+                    </div>
+                </a>
+                <a href="https://www.thepaper.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">📰</div>
+                    <div class="link-info">
+                        <div class="link-name">澎湃新闻</div>
+                        <div class="link-desc">专注时政</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- 视频 -->
+        <section class="category" id="video">
+            <div class="category-header">
+                <span class="category-icon">🎬</span>
+                <h2 class="category-title">视频娱乐</h2>
+            </div>
+            <div class="links-grid">
+                <a href="https://www.bilibili.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📺</div>
+                    <div class="link-info">
+                        <div class="link-name">哔哩哔哩</div>
+                        <div class="link-desc">弹幕视频网</div>
+                    </div>
+                </a>
+                <a href="https://www.acfun.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">🎞️</div>
+                    <div class="link-info">
+                        <div class="link-name">AcFun</div>
+                        <div class="link-desc">弹幕视频</div>
+                    </div>
+                </a>
+                <a href="https://www.xiguacity.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">🎭</div>
+                    <div class="link-info">
+                        <div class="link-name">西瓜视频</div>
+                        <div class="link-desc">中短视频</div>
+                    </div>
+                </a>
+                <a href="https://www.kuaishou.com/" target="_blank" class="link-card">
+                    <div class="link-icon">⚡</div>
+                    <div class="link-info">
+                        <div class="link-name">快手</div>
+                        <div class="link-desc">短视频社区</div>
+                    </div>
+                </a>
+                <a href="https://www.youku.com/" target="_blank" class="link-card">
+                    <div class="link-icon">👖</div>
+                    <div class="link-info">
+                        <div class="link-name">优酷</div>
+                        <div class="link-desc">这世界很酷</div>
+                    </div>
+                </a>
+                <a href="https://www.iqiyi.com/" target="_blank" class="link-card">
+                    <div class="link-icon">🎥</div>
+                    <div class="link-info">
+                        <div class="link-name">爱奇艺</div>
+                        <div class="link-desc">在线视频</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+        
+        <!-- 工具 -->
+        <section class="category" id="tools">
+            <div class="category-header">
+                <span class="category-icon">🛠️</span>
+                <h2 class="category-title">实用工具</h2>
+            </div>
+            <div class="links-grid">
+                <a href="https://www.yuque.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📝</div>
+                    <div class="link-info">
+                        <div class="link-name">语雀</div>
+                        <div class="link-desc">知识管理工具</div>
+                    </div>
+                </a>
+                <a href="https://mubu.com/" target="_blank" class="link-card">
+                    <div class="link-icon">📋</div>
+                    <div class="link-info">
+                        <div class="link-name">幕布</div>
+                        <div class="link-desc">大纲笔记</div>
+                    </div>
+                </a>
+                <a href="https://cli.im/" target="_blank" class="link-card">
+                    <div class="link-icon">⬜</div>
+                    <div class="link-info">
+                        <div class="link-name">草料二维码</div>
+                        <div class="link-desc">二维码生成</div>
+                    </div>
+                </a>
+                <a href="https://tool.lu/" target="_blank" class="link-card">
+                    <div class="link-icon">🔧</div>
+                    <div class="link-info">
+                        <div class="link-name">在线工具</div>
+                        <div class="link-desc">开发工具集</div>
+                    </div>
+                </a>
+                <a href="https://www.canva.cn/" target="_blank" class="link-card">
+                    <div class="link-icon">🎨</div>
+                    <div class="link-info">
+                        <div class="link-name">Canva</div>
+                        <div class="link-desc">在线设计</div>
+                    </div>
+                </a>
+                <a href="https://www.remove.bg/zh" target="_blank" class="link-card">
+                    <div class="link-icon">✂️</div>
+                    <div class="link-info">
+                        <div class="link-name">Remove.bg</div>
+                        <div class="link-desc">智能抠图</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 底部 -->
+    <footer class="footer">
+        <p>🌹 万里千寻 · 综合导航 | 用心收录每一个好网站</p>
+        <p style="margin-top: 8px; opacity: 0.5">© 2026 LongGe Navigation</p>
+    </footer>
+    
+    <!-- 回到顶部 -->
+    <div class="back-to-top" id="backToTop" onclick="scrollToTop()">⬆️</div>
+    
+    <script>
+        // 回到顶部
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // 显示/隐藏回到顶部按钮
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
