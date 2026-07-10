@@ -1,378 +1,344 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>万里千寻 - 龙哥的起始页</title>
-    <link rel="icon" href="favicon.png">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            padding: 20px;
-        }
-        
-        /* 动态背景 */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(118, 75, 162, 0.2) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: -1;
-            animation: bgShift 20s ease-in-out infinite;
-        }
-        
-        @keyframes bgShift {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.1); }
-        }
-        
-        /* 天气信息 */
-        .weather-info {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 13px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-            border: 1px solid rgba(255,255,255,0.15);
-            z-index: 100;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .weather-info:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.18);
-        }
-        
-        .weather-location {
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            opacity: 0.95;
-        }
-        
-        .weather-main {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .weather-icon { font-size: 22px; }
-        .weather-temp { font-weight: 700; font-size: 20px; }
-        .weather-extra { font-size: 11px; opacity: 0.8; }
-        
-        .weather-loading, .weather-default { opacity: 0.7; font-size: 12px; }
-        
-        .weather-loading { opacity: 0.6; font-size: 12px; }
-        
-        /* 时间日期 */
-        .datetime-container {
-            text-align: center;
-            margin-bottom: 40px;
-            cursor: pointer;
-            padding: 20px 30px;
-            border-radius: 20px;
-            transition: background 0.3s;
-        }
-        
-        .datetime-container:hover {
-            background: rgba(255,255,255,0.06);
-        }
-        
-        .time {
-            font-size: 96px;
-            font-weight: 600;
-            letter-spacing: 8px;
-            text-shadow: 0 8px 30px rgba(0,0,0,0.3);
-            line-height: 1;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Microsoft YaHei", sans-serif;
-        }
-        
-        .date {
-            font-size: 15px;
-            opacity: 0.88;
-            margin-top: 12px;
-            letter-spacing: 2px;
-            font-weight: 400;
-        }
-        
-        .date-lunar {
-            margin-left: 12px;
-            opacity: 0.75;
-            font-size: 14px;
-        }
-        
-        /* 引擎切换 */
-        .search-engine {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
-        }
-        
-        .engine-btn {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: white;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-        
-        .engine-btn:hover {
-            background: rgba(255,255,255,0.25);
-        }
-        
-        .engine-btn.active {
-            background: rgba(255,255,255,0.3);
-            font-weight: 600;
-        }
-        
-        /* 搜索框 - 居中 */
-        .search-box {
-            position: relative;
-            background: rgba(255,255,255,0.98);
-            border-radius: 50px;
-            box-shadow: 0 15px 60px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 580px;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-        }
-        
-        .search-box input {
-            flex: 1;
-            padding: 16px 20px;
-            padding-right: 60px;
-            border: none;
-            font-size: 17px;
-            outline: none;
-            background: transparent;
-            color: #333;
-            font-weight: 400;
-        }
-        
-        .search-box input::placeholder {
-            color: #999;
-        }
-        
-        .search-box .search-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-        
-        .search-box .search-btn:hover {
-            background: rgba(0,0,0,0.05);
-        }
-        
-        .search-box .search-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: #666;
-        }
-        
-        /* 快捷导航 */
-        .quick-nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 25px;
-            flex-wrap: wrap;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .quick-nav a {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: white;
-            text-decoration: none;
-            font-size: 13px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s;
-        }
-        
-        .quick-nav a:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-        
-        /* 底部 */
-        .footer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            opacity: 0.6;
-        }
-        
-        /* 手机端优化 */
-        @media (max-width: 768px) {
-            .time { font-size: 64px; }
-            .date { font-size: 13px; }
-            .search-box { max-width: 90%; }
-            .quick-nav { gap: 8px; }
-            .quick-nav a { padding: 6px 12px; font-size: 12px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>龙哥的起始页 · loongworld</title>
+<link rel="icon" href="favicon.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e17;
+  --card:rgba(255,255,255,.06);
+  --card-hover:rgba(255,255,255,.10);
+  --border:rgba(255,255,255,.08);
+  --text:#e8ecf1;
+  --text-dim:#8b95a5;
+  --accent:#6c9cff;
+  --accent-glow:rgba(108,156,255,.25);
+  --radius:14px;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:32px 24px;
+  position:relative;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 10%,rgba(108,156,255,.10),transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 90%,rgba(140,90,255,.08),transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,rgba(20,30,50,.5),transparent 70%);
+  pointer-events:none;
+  animation:bgPulse 18s ease-in-out infinite alternate;
+}
+@keyframes bgPulse{0%{transform:scale(1)}100%{transform:scale(1.1)}}
+
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  padding:14px 24px;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:rgba(10,14,23,.5);
+  border-bottom:1px solid var(--border);
+  z-index:50;
+}
+.brand{font-size:14px;letter-spacing:2px;color:var(--text-dim)}
+.brand b{color:var(--accent);font-weight:600}
+.brand .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;vertical-align:middle;box-shadow:0 0 10px var(--accent)}
+.topbar-actions{display:flex;align-items:center;gap:14px;font-size:13px;color:var(--text-dim)}
+.time-zone{cursor:pointer;padding:4px 10px;border-radius:6px;transition:.2s}
+.time-zone:hover{background:var(--card)}
+.weather-mini{display:flex;align-items:center;gap:6px;cursor:pointer}
+.weather-mini:hover{opacity:.7}
+
+.main{padding-top:60px;max-width:1000px;margin:0 auto}
+
+.clock-section{text-align:center;margin:40px 0 36px}
+.clock-time{
+  font-size:88px;font-weight:200;letter-spacing:4px;
+  background:linear-gradient(135deg,#6c9cff,#a78bfa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-variant-numeric:tabular-nums;
+}
+.clock-date{margin-top:6px;font-size:16px;color:var(--text-dim);letter-spacing:1px}
+.clock-date .lunar{margin-left:12px;padding:2px 10px;border:1px solid var(--border);border-radius:20px;font-size:12px}
+
+.search-wrap{margin:0 auto 40px;max-width:640px}
+.search-engines{display:flex;justify-content:center;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.engine-btn{
+  padding:6px 16px;border:1px solid var(--border);border-radius:8px;
+  background:transparent;color:var(--text-dim);font-size:13px;cursor:pointer;transition:.2s;
+}
+.engine-btn:hover{background:var(--card);color:var(--text)}
+.engine-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 16px var(--accent-glow)}
+.search-box{
+  position:relative;display:flex;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 18px;transition:.25s;
+}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);background:rgba(255,255,255,.08)}
+.search-box svg{flex-shrink:0;margin-right:12px;opacity:.4}
+.search-box input{flex:1;background:transparent;border:0;outline:0;color:var(--text);font-size:16px;padding:4px 0}
+.search-box input::placeholder{color:var(--text-dim)}
+.search-box .kbd-hint{font-size:11px;color:var(--text-dim);padding:2px 6px;border:1px solid var(--border);border-radius:4px;margin-left:10px}
+
+.nav-section{margin-bottom:36px}
+.nav-category{margin-bottom:24px}
+.cat-title{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--text-dim);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:12px;padding:0 4px;
+}
+.cat-title::after{content:"";flex:1;height:1px;background:var(--border)}
+.nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  text-decoration:none;color:var(--text);transition:.2s;overflow:hidden;position:relative;
+}
+.nav-item:hover{background:var(--card-hover);border-color:rgba(255,255,255,.14);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(255,255,255,.05)}
+.nav-label{font-size:14px;font-weight:500;display:flex;flex-direction:column;min-width:0}
+.nav-label small{font-size:11px;color:var(--text-dim);font-weight:400;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.footer{text-align:center;padding:30px 0 10px;font-size:12px;color:var(--text-dim);letter-spacing:1px}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.theme-toggle{cursor:pointer;background:none;border:none;color:var(--text-dim);font-size:18px;padding:4px}
+
+@media(max-width:600px){
+  .clock-time{font-size:56px}
+  .topbar{padding:12px 16px}
+  .topbar-actions{font-size:12px;gap:10px}
+  .nav-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .main{padding-top:50px}
+}
+@media(max-width:420px){
+  .nav-grid{grid-template-columns:1fr 1fr}
+  .clock-time{font-size:46px}
+}
+</style>
 </head>
 <body>
-    <!-- 天气信息 -->
-    <div class="weather-info" onclick="openWeather()">
-        <div class="weather-location">
-            <span class="weather-icon">🌤️</span>
-            <span>加载中...</span>
-        </div>
-        <div class="weather-main">
-            <span class="weather-temp">--°</span>
-            <span class="weather-extra">--</span>
-        </div>
-        <div class="weather-loading">正在获取天气数据...</div>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><b>LOONGWORLD</b> · 起始页</div>
+  <div class="topbar-actions">
+    <div class="time-zone" id="tzDisplay">UTC+8</div>
+    <div class="weather-mini" id="weatherMini" title="点击切换城市">
+      <span id="wmIcon">🌤️</span>
+      <span id="wmTemp">--°</span>
     </div>
-    
-    <!-- 引擎切换 -->
-    <div class="search-engine">
-        <button class="engine-btn active" onclick="setEngine('baidu')">百度</button>
-        <button class="engine-btn" onclick="setEngine('bing')">Bing</button>
-        <button class="engine-btn" onclick="setEngine('google')">Google</button>
+    <button class="theme-toggle" id="themeBtn" title="切换主题">🌙</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="clock-section">
+    <div class="clock-time" id="clockTime">00:00</div>
+    <div class="clock-date">
+      <span id="clockDate">--</span>
+      <span class="lunar" id="lunar">--</span>
     </div>
-    
-    <!-- 时间日期 -->
-    <div class="datetime-container" onclick="copyTime()">
-        <div class="time" id="time">00:00</div>
-        <div class="date">
-            <span id="date">--年--月--日</span>
-            <span class="date-lunar" id="lunar">--</span>
-        </div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-engines" id="engineList">
+      <button class="engine-btn active" data-engine="baidu">百度</button>
+      <button class="engine-btn" data-engine="bing">Bing</button>
+      <button class="engine-btn" data-engine="google">Google</button>
+      <button class="engine-btn" data-engine="sogou">搜狗</button>
+      <button class="engine-btn" data-engine="duckduckgo">DDG</button>
+      <button class="engine-btn" data-engine="perplexity">Perplexity</button>
     </div>
-    
-    <!-- 搜索框 -->
     <div class="search-box">
-        <input type="text" id="search-input" placeholder="搜索..." onkeypress="handleKeyPress(event)">
-        <button class="search-btn" onclick="search()">
-            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        </button>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="搜索互联网..." autofocus autocomplete="off">
+      <span class="kbd-hint">⏎</span>
     </div>
-    
-    <!-- 快捷导航 -->
-    <div class="quick-nav">
-        <a href="https://book.douban.com/" target="_blank">📚 微信读书</a>
-        <a href="https://www.zcool.com.cn/" target="_blank">🎨 站酷</a>
-        <a href="https://www.yuque.com/" target="_blank">📝 语雀</a>
-        <a href="https://sspai.com/" target="_blank">💡 少数派</a>
-        <a href="https://cli.im/" target="_blank">🛠️ 草料二维码</a>
+  </div>
+
+  <div class="nav-section" id="navSection"></div>
+
+  <div class="footer">
+    <a href="https://github.com/loongworld" target="_blank">@loongworld</a> &nbsp;·&nbsp; 始于好奇心
+  </div>
+</div>
+
+<script>
+const ENGINES = {
+  baidu:      {url:'https://www.baidu.com/s?wd='},
+  bing:       {url:'https://www.bing.com/search?q='},
+  google:     {url:'https://www.google.com/search?q='},
+  sogou:      {url:'https://www.sogou.com/web?query='},
+  duckduckgo: {url:'https://duckduckgo.com/?q='},
+  perplexity: {url:'https://perplexity.ai/search?q='},
+};
+let currentEngine = 'baidu';
+
+document.getElementById('engineList').addEventListener('click', e => {
+  const btn = e.target.closest('.engine-btn');
+  if (!btn) return;
+  currentEngine = btn.dataset.engine;
+  document.querySelectorAll('.engine-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  window.open(ENGINES[currentEngine].url + encodeURIComponent(q), '_blank');
+}
+document.getElementById('searchInput').addEventListener('keydown', ev => {
+  if (ev.key === 'Enter') doSearch();
+});
+
+function pad(n){return String(n).padStart(2,'0')}
+function tick(){
+  const now = new Date();
+  document.getElementById('clockTime').textContent = pad(now.getHours())+':'+pad(now.getMinutes());
+  const days = ['周日','周一','周二','周三','周四','周五','周六'];
+  document.getElementById('clockDate').textContent =
+    `${now.getFullYear()}年${pad(now.getMonth()+1)}月${pad(now.getDate())}日 ${days[now.getDay()]}`;
+  document.getElementById('lunar').textContent = getLunar(now);
+}
+const LUNAR_BASE = {
+  2025:{'2025-01-29':'正月初一','2025-02-22':'闰六月初五','2025-03-29':'七月初八','2025-04-27':'七月廿六','2025-05-26':'八月初四','2025-06-24':'八月廿三','2025-07-24':'九月初二','2025-08-22':'九月三十','2025-09-21':'十月三十','2025-10-21':'冬月初一','2025-11-20':'冬月三十','2025-12-20':'腊月初二'},
+  2026:{'2026-02-17':'正月初一','2026-03-18':'正月廿十','2026-04-16':'二月十九','2026-05-16':'三月初一','2026-06-14':'三月初十','2026-07-14':'四月十一','2026-08-12':'五月十一','2026-09-11':'六月十','2026-10-11':'七月初一','2026-11-10':'七月初十','2026-12-10':'八月初一'},
+};
+function getLunar(d){
+  const ds = d.toISOString().slice(0,10);
+  const y = LUNAR_BASE[d.getFullYear()];
+  if(!y) return '农历';
+  let best=null,bestD=9999;
+  for(const [key,val] of Object.entries(y)){
+    const diff=Math.abs(new Date(ds)-new Date(key));
+    if(diff<bestD){bestD=diff;best=val}
+  }
+  return best||'农历';
+}
+tick();setInterval(tick,1000);
+
+let WEATHER_CITY = localStorage.getItem('weatherCity') || '北京';
+async function fetchWeather(){
+  try{
+    const key = '0f005e157f4a4a5a8e8202607241008';
+    const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${WEATHER_CITY}&appid=${key}&units=metric&lang=zh_cn`);
+    const d = await r.json();
+    if(!d.main) return;
+    const t = Math.round(d.main.temp);
+    const desc = d.weather[0].main;
+    const icons = {'Clear':'☀️','Clouds':'⛅','Rain':'🌧️','Thunderstorm':'⛈️','Snow':'❄️','Mist':'🌫️','Fog':'🌫️'};
+    document.getElementById('wmIcon').textContent = icons[desc]||'🌤️';
+    document.getElementById('wmTemp').textContent = t+'°';
+    document.title = `${t}° ${WEATHER_CITY} · 龙哥的起始页`;
+  }catch(e){}
+}
+fetchWeather();
+document.getElementById('weatherMini').addEventListener('click', () => {
+  const newCity = prompt('输入城市名（如：上海 / 广州 / 成都）', WEATHER_CITY);
+  if(newCity && newCity.trim()){
+    localStorage.setItem('weatherCity', newCity.trim());
+    WEATHER_CITY = newCity.trim();
+    fetchWeather();
+  }
+});
+
+const THEMES = {
+  light:{bg:'#f0f2f5',card:'rgba(255,255,255,.7)',cardHover:'rgba(255,255,255,.9)',border:'rgba(0,0,0,.06)',text:'#1a1a2e',textDim:'#6b7280',accent:'#3b82f6'}
+};
+let isLight=false;
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  isLight=!isLight;
+  if(isLight){
+    const t=THEMES.light;
+    document.documentElement.style.setProperty('--bg',t.bg);
+    document.documentElement.style.setProperty('--card',t.card);
+    document.documentElement.style.setProperty('--card-hover',t.cardHover);
+    document.documentElement.style.setProperty('--border',t.border);
+    document.documentElement.style.setProperty('--text',t.text);
+    document.documentElement.style.setProperty('--text-dim',t.textDim);
+    document.documentElement.style.setProperty('--accent',t.accent);
+    document.getElementById('themeBtn').textContent='☀️';
+  }else{
+    ['bg','card','card-hover','border','text','text-dim','accent'].forEach(p=>document.documentElement.style.removeProperty('--'+p));
+    document.getElementById('themeBtn').textContent='🌙';
+  }
+  localStorage.setItem('theme',isLight?'light':'dark');
+});
+if(localStorage.getItem('theme')==='light'){document.getElementById('themeBtn').click();}
+
+const NAV = [
+  {cat:'🔥 高频入口', items:[
+    {n:'头条',s:'内容创作',i:'📝',u:'https://mp.toutiao.com'},
+    {n:'GitHub',s:'代码仓库',i:'🐙',u:'https://github.com/loongworld'},
+    {n:'微信读书',s:'阅读',i:'📚',u:'https://weread.qq.com'},
+    {n:'Gitee',s:'国内码云',i:'🔧',u:'https://gitee.com'},
+    {n:'飞牛NAS',s:'自家NAS',i:'🏠',u:'http://172.22.22.1'},
+  ]},
+  {cat:'🤖 AI 工具', items:[
+    {n:'Perplexity',s:'AI 搜索引擎',i:'🔮',u:'https://perplexity.ai'},
+    {n:'Cursor',s:'AI 代码编辑器',i:'⚡',u:'https://www.cursor.com'},
+    {n:'HuggingFace',s:'模型社区',i:'🤗',u:'https://huggingface.co'},
+    {n:'GitHub Copilot',s:'代码助手',i:'🧠',u:'https://github.com/features/copilot'},
+    {n:'文心一言',s:'百度AI',i:'🟢',u:'https://yiyan.baidu.com'},
+    {n:'DeepSeek',s:'深度求索',i:'🦞',u:'https://www.deepseek.com'},
+  ]},
+  {cat:'💻 开发者', items:[
+    {n:'StackOverflow',s:'问答社区',i:'📋',u:'https://stackoverflow.com'},
+    {n:'MDN',s:'Web 文档',i:'📖',u:'https://developer.mozilla.org'},
+    {n:'CodePen',s:'前端游乐场',i:'🎨',u:'https://codepen.io'},
+    {n:'Replit',s:'在线编程',i:'🛠️',u:'https://replit.com'},
+    {n:'Vercel',s:'前端部署',i:'▲',u:'https://vercel.com'},
+    {n:'JetBrains',s:'IDE 家族',i:'🔵',u:'https://jetbrains.com'},
+  ]},
+  {cat:'🎨 设计美学', items:[
+    {n:'Dribbble',s:'设计灵感',i:'🏀',u:'https://dribbble.com'},
+    {n:'Coolors',s:'配色方案',i:'🎨',u:'https://coolors.co'},
+    {n:'Unsplash',s:'高清图片',i:'📷',u:'https://unsplash.com'},
+    {n:'Iconify',s:'图标库',i:'🔍',u:'https://icon-sets.iconify.design'},
+    {n:'Google Fonts',s:'字体集',i:'✏️',u:'https://fonts.google.com'},
+  ]},
+  {cat:'📚 阅读学习', items:[
+    {n:'Archive.org',s:'互联网档案馆',i:'🏛️',u:'https://archive.org'},
+    {n:'Z-Library',s:'电子书库',i:'📚',u:'https://z-lib.io'},
+    {n:'Wikipedia',s:'维基百科',i:'🌐',u:'https://zh.wikipedia.org'},
+    {n:'知乎',s:'知识问答',i:'💬',u:'https://www.zhihu.com'},
+    {n:'豆瓣',s:'书影音',i:'⭐',u:'https://book.douban.com'},
+  ]},
+  {cat:'✨ 小众精品', items:[
+    {n:'Letterboxd',s:'影迷日记',i:'🎬',u:'https://letterboxd.com'},
+    {n:'ProductHunt',s:'新产品发现',i:'🚀',u:'https://producthunt.com'},
+    {n:'IndieDB',s:'独立游戏社区',i:'🎮',u:'https://www.indiedb.com'},
+    {n:'ReadPeed',s:'中文科技简报',i:'📰',u:'https://read.peed.wiki'},
+    {n:'1911',s:'每日头条',i:'🔥',u:'https://1911cc.com'},
+    {n:'Hacker News',s:'HN 技术头条',i:'🧭',u:'https://news.ycombinator.com'},
+  ]},
+];
+
+function renderNav(){
+  const sec = document.getElementById('navSection');
+  sec.innerHTML = NAV.map(c=>`
+    <div class="nav-category">
+      <div class="cat-title">${c.cat}</div>
+      <div class="nav-grid">
+        ${c.items.map(it=>`
+          <a class="nav-item" href="${it.u}" target="_blank">
+            <div class="nav-icon">${it.i}</div>
+            <div class="nav-label"><b>${it.n}</b><small>${it.s}</small></div>
+          </a>
+        `).join('')}
+      </div>
     </div>
-    
-    <!-- 底部 -->
-    <div class="footer">🌹 万里千寻 · 龙哥的起始页</div>
-    
-    <script>
-        // 当前引擎
-        let currentEngine = 'baidu';
-        const engines = {
-            baidu: { url: 'https://www.baidu.com/s?wd=', name: '百度' },
-            bing: { url: 'https://www.bing.com/search?q=', name: 'Bing' },
-            google: { url: 'https://www.google.com/search?q=', name: 'Google' }
-        };
-        
-        // 引擎切换
-        function setEngine(engine) {
-            currentEngine = engine;
-            document.querySelectorAll('.engine-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-        
-        // 搜索
-        function search() {
-            const query = document.getElementById('search-input').value.trim();
-            if (query) {
-                window.open(engines[currentEngine].url + encodeURIComponent(query), '_blank');
-            }
-        }
-        
-        // 回车搜索
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') search();
-        }
-        
-        // 更新时间
-        function updateTime() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('time').textContent = `${hours}:${minutes}`;
-            
-            const year = now.getFullYear();
-            const month = now.getMonth() + 1;
-            const day = now.getDate();
-            document.getElementById('date').textContent = `${year}年${month}月${day}日`;
-            
-            // 简单农历（这里用占位，实际可调用 API）
-            document.getElementById('lunar').textContent = '农历查询中...';
-        }
-        
-        // 复制时间
-        function copyTime() {
-            const time = document.getElementById('time').textContent;
-            navigator.clipboard.writeText(time);
-            alert(`已复制：${time}`);
-        }
-        
-        // 打开天气
-        function openWeather() {
-            window.open('https://tianqi.2345.com/', '_blank');
-        }
-        
-        // 初始化
-        updateTime();
-        setInterval(updateTime, 1000);
-    </script>
+  `).join('');
+}
+renderNav();
+</script>
 </body>
 </html>
