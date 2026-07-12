@@ -10,6 +10,8 @@
         {{ icp }}
       </span>
       <span class="about" @click="aboutSiteModal = true">关于</span>
+      <!-- 构建日期：push+build 后自动更新，一眼看出是不是新版 -->
+      <span class="build-date" :title="'构建于 ' + buildDate">{{ buildDate }}</span>
     </div>
     <!-- 关于 -->
     <n-modal
@@ -49,6 +51,9 @@ const siteName = import.meta.env.VITE_SITE_TITLE;
 const siteAnthor = import.meta.env.VITE_SITE_ANTHOR;
 const copyrightLink = import.meta.env.VITE_SITE_COPYRIGHTLINK;
 const fullYear = new Date().getFullYear();
+
+// 构建日期：每次 Actions build 时由 vite 注入
+const buildDate = import.meta.env.VITE_BUILD_DATE ?? "未知";
 
 // 关于弹窗数据
 const aboutSiteModal = ref(false);
@@ -105,6 +110,15 @@ const jumpTo = (url) => {
         content: "|";
         margin-right: 4px;
       }
+    }
+    .build-date {
+      margin-left: 8px;
+      font-size: 11px;
+      opacity: 0.5;
+      font-family: monospace;
+      white-space: nowrap;
+      cursor: help;
+      &:hover { opacity: 0.9; }
     }
     .anthor,
     .icp,
