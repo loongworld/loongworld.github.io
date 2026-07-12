@@ -25,6 +25,7 @@ export const fetchData = async (token) => {
     const content = decodeURIComponent(escape(atob(json.content.replace(/\s/g, ""))));
     return { data: JSON.parse(content), sha: json.sha };
   }
+  // 回退：拉取站点根 data.json（公开静态）
   const res = await fetch(`/data.json?t=${Date.now()}`);
   if (!res.ok) return { data: null, sha: null };
   return { data: await res.json(), sha: null };
