@@ -1,5 +1,22 @@
 <template>
   <Provider>
+    <!-- 密码访问门禁 -->
+    <div v-if="!authed" class="gate">
+      <div class="gate-box">
+        <div class="gate-title">🔒 请输入访问密码</div>
+        <n-input
+          v-model:value="pwdInput"
+          type="password"
+          show-password-on="click"
+          placeholder="访问密码"
+          @keyup.enter="checkPwd"
+          :status="pwdErr ? 'error' : ''"
+        />
+        <n-button type="primary" block :loading="pwdChecking" @click="checkPwd">进入</n-button>
+        <div v-if="pwdErr" class="gate-err">密码错误</div>
+      </div>
+    </div>
+
     <!-- 壁纸 -->
     <Cover @loadComplete="loadComplete" />
     <!-- 主界面：直接渲染，无 loading、无淡入过渡 -->
@@ -46,6 +63,7 @@
 
 <script setup>
 import { onMounted, nextTick, watch, ref } from "vue";
+import { NInput, NButton } from "naive-ui";
 import { statusStore, setStore } from "@/stores";
 import { getGreeting } from "@/utils/timeTools";
 import Provider from "@/components/Provider.vue";
@@ -58,6 +76,22 @@ import Footer from "@/components/Footer.vue";
 const set = setStore();
 const status = statusStore();
 const mainClickable = ref(true);
+
+// 密码访问（前端校验，258888）
+const SITE_PWD = "258888";
+const PWD_KEY = "snav_gate";
+const authed = ref(localStorage.getItem(PWD_KEY) === "1");
+const pwdInput = ref("");
+const pwdErr = ref(false);
+const pwdChecking = ref(false);
+const checkPwd = () => {
+  if (pwdInput.value === SITE_PWD) {
+    localStorage.setItem(PWD_KEY, "1");
+    authed.value = true;
+  } else {
+    pwdErr.value = true;
+  }
+};
 
 // 获取配置
 const welcomeText = import.meta.env.VITE_WELCOME_TEXT ?? "欢迎访问本站";
@@ -178,6 +212,37 @@ onMounted(() => {
       &:active {
         transform: scale(0.95);
       }
+    }
+  }
+}
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  .gate-box {
+    width: 280px;
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--main-background-light-color, #fff);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    .gate-title {
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--main-text-color, #333);
+    }
+    .gate-err {
+      font-size: 12px;
+      color: #d03050;
+      text-align: center;
     }
   }
 }
