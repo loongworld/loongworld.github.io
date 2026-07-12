@@ -18,7 +18,7 @@ export const fetchData = async (token) => {
   if (token) {
     const res = await fetch(
       `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
-      { headers: { Accept: "application/vnd.github+json", Authorization: `token ${token}` } },
+      { headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${token}` } },
     );
     if (res.status === 404) return { data: null, sha: null };
     if (!res.ok) throw new Error(`拉取失败 HTTP ${res.status}`);
@@ -36,7 +36,7 @@ export const fetchData = async (token) => {
 const getSha = async (token) => {
   const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`,
-    { headers: { Accept: "application/vnd.github+json", Authorization: `token ${token}` } },
+    { headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${token}` } },
   );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`获取 sha 失败 HTTP ${res.status}`);
@@ -61,7 +61,7 @@ export const saveData = async (data, token) => {
       method: "PUT",
       headers: {
         Accept: "application/vnd.github+json",
-        Authorization: `token ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -79,14 +79,14 @@ export const verifyToken = async (token) => {
   try {
     const res = await fetch(
       `https://api.github.com/repos/${OWNER}/${REPO}`,
-      { headers: { Authorization: `token ${token}` } },
+      { headers: { Authorization: `Bearer ${token}` } },
     );
     if (!res.ok) return { valid: false, msg: `Token 无效 (${res.status})` };
     const repo = await res.json();
     if (!repo.permissions || !repo.permissions.push)
       return { valid: false, msg: "该 Token 无仓库写权限" };
     const u = await fetch("https://api.github.com/user", {
-      headers: { Authorization: `token ${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
     const user = u.ok ? (await u.json()).login : "";
     return { valid: true, user };
