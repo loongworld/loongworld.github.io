@@ -1,19 +1,20 @@
 <template>
   <Provider>
-    <!-- 密码访问门禁 -->
-    <div v-if="!authed" class="gate">
+    <!-- 管理区密码门禁：仅在 box/set 状态（点时间或右键进入）时校验，首页公开 -->
+    <div v-if="needAuth" class="gate">
       <div class="gate-box">
-        <div class="gate-title">🔒 请输入访问密码</div>
+        <div class="gate-title">🔒 管理区，请输入密码</div>
         <n-input
           v-model:value="pwdInput"
           type="password"
           show-password-on="click"
-          placeholder="访问密码"
+          placeholder="管理密码"
           @keyup.enter="checkPwd"
           :status="pwdErr ? 'error' : ''"
         />
         <n-button type="primary" block :loading="pwdChecking" @click="checkPwd">进入</n-button>
         <div v-if="pwdErr" class="gate-err">密码错误</div>
+        <div class="gate-tip">点首页空白处可返回公开页</div>
       </div>
     </div>
 
@@ -62,7 +63,7 @@
 </template>
 
 <script setup>
-import { onMounted, nextTick, watch, ref } from "vue";
+import { onMounted, nextTick, watch, ref, computed } from "vue";
 import { NInput, NButton } from "naive-ui";
 import { statusStore, setStore } from "@/stores";
 import { getGreeting } from "@/utils/timeTools";
@@ -77,17 +78,23 @@ const set = setStore();
 const status = statusStore();
 const mainClickable = ref(true);
 
-// 密码访问（前端校验，258888）
+// 管理区密码（前端校验，258888）
+// 仅在进入管理区（box/set，即点时间或右键）时校验；首页（normal/focus）公开，不挡
 const SITE_PWD = "258888";
-const PWD_KEY = "snav_gate";
+const PWD_KEY = "snav_admin_ok";
 const authed = ref(localStorage.getItem(PWD_KEY) === "1");
 const pwdInput = ref("");
 const pwdErr = ref(false);
 const pwdChecking = ref(false);
+// 需要密码：当前是 box/set 状态 且 还没通过密码
+const needAuth = computed(
+  () => (status.siteStatus === "box" || status.siteStatus === "set") && !authed.value,
+);
 const checkPwd = () => {
   if (pwdInput.value === SITE_PWD) {
     localStorage.setItem(PWD_KEY, "1");
     authed.value = true;
+    pwdErr.value = false;
   } else {
     pwdErr.value = true;
   }
@@ -225,7 +232,7 @@ onMounted(() => {
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(12px);
   .gate-box {
-    width: 280px;
+    width: 300px;
     padding: 24px;
     border-radius: 12px;
     background: var(--main-background-light-color, #fff);
@@ -242,6 +249,11 @@ onMounted(() => {
     .gate-err {
       font-size: 12px;
       color: #d03050;
+      text-align: center;
+    }
+    .gate-tip {
+      font-size: 12px;
+      opacity: 0.5;
       text-align: center;
     }
   }
