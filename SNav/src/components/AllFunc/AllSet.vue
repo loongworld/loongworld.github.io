@@ -118,14 +118,7 @@
               :tooltip="false"
             />
           </n-card>
-          <n-h6 prefix="bar"> 天气与时间 </n-h6>
-          <n-card class="set-item">
-            <div class="name">
-              <span class="title">天气显示</span>
-              <span class="tip">是否在首页时间下展示天气</span>
-            </div>
-            <n-switch v-model:value="showWeather" :round="false" />
-          </n-card>
+          <n-h6 prefix="bar"> 时间与日期 </n-h6>
           <n-card class="set-item">
             <div class="name">
               <span class="title">时钟样式</span>
@@ -277,7 +270,6 @@ const {
   autoFocus,
   autoInputBlur,
   showLunar,
-  showWeather,
   showSeconds,
   showZeroTime,
   use12HourFormat,
