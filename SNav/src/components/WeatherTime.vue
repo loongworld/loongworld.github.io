@@ -1,5 +1,5 @@
 <template>
-  <!-- 天气时钟 -->
+  <!-- 时间区 -->
   <div
     :class="[
       'weather-time',
@@ -123,7 +123,6 @@ onBeforeUnmount(() => {
   margin-bottom: 20px;
   transform: translateY(-140px);
   color: var(--main-text-color);
-  animation: fade-time-in 0.6s cubic-bezier(0.21, 0.78, 0.36, 1);
   transition:
     transform 0.3s,
     opacity 0.5s,
@@ -141,7 +140,6 @@ onBeforeUnmount(() => {
       display: inline-block;
       margin: 0 5px;
       transform: translateY(-4px);
-      animation: separator-breathe 0.7s infinite alternate;
     }
     .amPm {
       font-size: 1rem;

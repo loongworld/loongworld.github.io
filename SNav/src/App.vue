@@ -109,8 +109,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-#main,
-#loading {
+#main {
   position: absolute;
   top: 0;
   left: 0;
@@ -180,18 +179,6 @@ onMounted(() => {
         transform: scale(0.95);
       }
     }
-  }
-}
-#loading {
-  color: var(--main-text-color);
-  .logo {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 24px;
-    animation: logo-breathe 3s infinite alternate;
-  }
-  .tip {
-    font-size: 20px;
   }
 }
 </style>

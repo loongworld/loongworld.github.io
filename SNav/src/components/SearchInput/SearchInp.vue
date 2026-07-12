@@ -201,7 +201,6 @@ const changeEngine = () => {
     background-color: var(--main-background-color);
     backdrop-filter: blur(10px);
     opacity: 1;
-    animation: fade-up-in 0.7s cubic-bezier(0.37, 0.99, 0.36, 1);
     transition:
       transform 0.3s,
       background-color 0.3s,
