@@ -7,27 +7,14 @@
       <div class="note-wrap">
         <!-- 状态栏 -->
         <div class="note-bar">
-          <n-button size="small" secondary @click="showToken = !showToken">
-            {{ token ? "已配置 Token" : "配置 Token" }}
+          <n-button size="small" secondary disabled>
+            自动保存
           </n-button>
           <n-button size="small" type="primary" :loading="saving" @click="saveAll">
-            保存
+            立即同步
           </n-button>
           <span class="status" :class="statusType">{{ statusText }}</span>
         </div>
-
-        <!-- Token 输入 -->
-        <n-collapse-transition :show="showToken">
-          <div class="token-box">
-            <n-input
-              type="password"
-              v-model:value="tokenInput"
-              placeholder="ghp_xxx 或 github_pat_xxx（仅需一次，存本地）"
-              @keyup.enter="verifyAndSave"
-            />
-            <n-button size="small" @click="verifyAndSave">验证并保存</n-button>
-          </div>
-        </n-collapse-transition>
 
         <!-- 新便签输入 -->
         <div class="note-input">
@@ -59,22 +46,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted, h } from "vue";
+import { ref, onMounted } from "vue";
 import {
-  NTabs, NTabPane, NButton, NInput, NScrollbar, NCollapseTransition,
+  NTabs, NTabPane, NButton, NInput, NScrollbar,
 } from "naive-ui";
 import ShortCut from "@/components/AllFunc/Box/ShortCut.vue";
 import { siteStore } from "@/stores";
-import { fetchData, saveData, getToken, setToken, verifyToken } from "@/api/github";
+import { fetchData } from "@/api/github";
 
 const site = siteStore();
 const notes = ref([]);
 const newContent = ref("");
-const token = ref(getToken());
-const tokenInput = ref("");
-const showToken = ref(false);
 const saving = ref(false);
-const statusText = ref("点击「保存」写入 GitHub");
+const statusText = ref("改动将自动保存");
 const statusType = ref("idle");
 
 onMounted(async () => {
@@ -113,44 +97,20 @@ const del = (id) => {
   site.delNote(id);
 };
 
-const verifyAndSave = async () => {
-  const t = tokenInput.value.trim();
-  if (!t) {
-    $message.error("请输入 Token");
-    return;
-  }
-  const r = await verifyToken(t);
-  if (!r.valid) {
-    $message.error("Token 无效：" + r.msg);
-    return;
-  }
-  setToken(t);
-  token.value = t;
-  $message.success("Token 已保存：" + r.user);
-  showToken.value = false;
-};
-
+// 手动「立即同步」= 马上写一次 GitHub（日常改动已自动 debounce 保存）
 const saveAll = async () => {
-  if (!token.value) {
-    statusText.value = "请先配置 Token";
-    statusType.value = "err";
-    showToken.value = true;
-    return;
-  }
   saving.value = true;
-  statusText.value = "保存中…";
+  statusText.value = "同步中…";
   statusType.value = "idle";
   try {
-    const payload = site.exportData();
-    payload.notes = notes.value;
-    await saveData(payload, token.value);
+    await site.flushSave();
     statusText.value = "已保存到 GitHub ✓";
     statusType.value = "ok";
-    $message.success("便签已写入 GitHub");
+    $message.success("已同步到 GitHub");
   } catch (e) {
-    statusText.value = "保存失败：" + e.message;
+    statusText.value = "同步失败：" + e.message;
     statusType.value = "err";
-    $message.error("保存失败：" + e.message);
+    $message.error("同步失败：" + e.message);
   } finally {
     saving.value = false;
   }
