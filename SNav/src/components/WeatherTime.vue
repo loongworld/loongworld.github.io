@@ -42,12 +42,13 @@
       <span class="day">{{ timeData.day ?? "0" }}</span>
       <span class="weekday">{{ timeData.weekday ?? "星期八" }}</span>
     </div>
-    <div v-if="set.showWeather" class="weather">
-      <span class="status">{{ weatherData?.condition ?? "N/A" }}</span>
-      <span class="temperature">{{ weatherData?.temp ?? "N/A" }} ℃</span>
-      <span class="wind">{{ weatherData?.windDir ?? "N/A" }}</span>
-      <span v-if="weatherData?.windLevel" class="wind-level"> {{ weatherData.windLevel }} 级 </span>
-    </div>
+    <!-- 一言 -->
+    <Transition name="fade" mode="out-in">
+      <div v-if="hitokoto.text" class="hitokoto" :key="hitokoto.id" @click.stop="refreshHitokoto">
+        <span class="text">{{ hitokoto.text }}</span>
+        <span v-if="hitokoto.from" class="from">—— {{ hitokoto.from }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -55,7 +56,7 @@
 import { getCurrentTime } from "@/utils/timeTools";
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
 import { statusStore, setStore } from "@/stores";
-import { getAdcode, getWeather } from "@/api";
+import { getHitokoto } from "@/api";
 
 const set = setStore();
 const status = statusStore();
@@ -64,54 +65,32 @@ const status = statusStore();
 const timeData = ref({});
 const timeInterval = ref(null);
 
-// 天气数据
-const weatherData = ref(null);
-const weatherKey = import.meta.env.VITE_WEATHER_KEY;
+// 一言数据
+const hitokoto = ref({ id: null, text: "", from: "" });
 
 // 更新时间
 const updateTimeData = () => {
   timeData.value = getCurrentTime(set.showZeroTime, set.use12HourFormat);
 };
 
-// 获取天气数据
-const getWeatherData = async () => {
-  if (!weatherKey) {
-    return $message.warning("请配置天气 Key");
-  }
-  // 当前时间戳
-  const currentTime = Date.now();
-  // 上次获取天气数据的数据
-  let lastWeatherData = JSON.parse(localStorage.getItem("lastWeatherData")) || {
-    data: {},
-    lastFetchTime: 0,
-  };
-  // 上次获取天气数据的时间戳与当前时间的时间差（毫秒）
-  const timeDifference = currentTime - lastWeatherData.lastFetchTime;
-  // 是否超出 5 分钟
-  if (timeDifference >= 5 * 60 * 1000) {
-    const adCodeResult = await getAdcode(weatherKey);
-    if (adCodeResult.infocode !== "10000") {
-      return $message.error("地区查询失败");
-    }
-    // 获取天气数据
-    const weatherResult = await getWeather(weatherKey, adCodeResult.adcode);
-    if (weatherResult.infocode !== "10000") {
-      return $message.error("地区查询失败");
-    }
-    const data = weatherResult.lives[0];
-    weatherData.value = {
-      condition: data.weather,
-      temp: data.temperature,
-      windDir: data.winddirection + "风",
-      windLevel: data.windpower,
+// 获取一言
+const fetchHitokoto = async () => {
+  try {
+    const res = await getHitokoto();
+    const d = res.data;
+    hitokoto.value = {
+      id: d.id,
+      text: d.hitokoto,
+      from: [d.from_who, d.from].filter(Boolean).join(" · ") || d.creator,
     };
-    lastWeatherData = { data: weatherData.value, lastFetchTime: currentTime };
-    // 储存新天气数据
-    localStorage.setItem("lastWeatherData", JSON.stringify(lastWeatherData));
-  } else {
-    console.log("从缓存中读取天气数据：", lastWeatherData);
-    weatherData.value = lastWeatherData.data;
+  } catch (e) {
+    console.error("一言获取失败：", e);
   }
+};
+
+// 点击刷新一言
+const refreshHitokoto = () => {
+  fetchHitokoto();
 };
 
 // 监听配置发生改变
@@ -126,8 +105,8 @@ onMounted(() => {
   // 时间
   updateTimeData();
   timeInterval.value = setInterval(updateTimeData, 1000);
-  // 天气
-  getWeatherData();
+  // 一言
+  fetchHitokoto();
 });
 
 onBeforeUnmount(() => {
@@ -205,15 +184,27 @@ onBeforeUnmount(() => {
       }
     }
   }
-  .weather {
-    opacity: 0.7;
-    font-size: 1rem;
+  .hitokoto {
+    margin-top: 14px;
+    max-width: 80vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.95rem;
+    opacity: 0.75;
     text-shadow: var(--main-text-shadow);
-    .temperature {
-      margin: 0 6px;
+    cursor: pointer;
+    .text {
+      line-height: 1.5;
+      text-align: center;
     }
-    .wind-level {
-      margin-left: 6px;
+    .from {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    &:hover {
+      opacity: 1;
     }
   }
 

@@ -2,24 +2,18 @@ import axios from "@/utils/request";
 import fetchJsonp from "fetch-jsonp";
 
 /**
- * 获取天气
- * https://lbs.amap.com/api/webservice/guide/api/weatherinfo
+ * 获取一言
+ * https://hitokoto.cn/api
+ * 分类：a动画 b漫画 c游戏 d文学 e原创 f网络 g其他
  */
-// 获取高德地理位置信息
-export const getAdcode = async (key) => {
+export const getHitokoto = async () => {
   return axios({
     method: "GET",
-    url: "https://restapi.amap.com/v3/ip",
-    params: { key },
-  });
-};
-
-// 获取高德地理天气信息
-export const getWeather = async (key, city) => {
-  return axios({
-    method: "GET",
-    url: "https://restapi.amap.com/v3/weather/weatherInfo",
-    params: { key, city, extensions: "base" },
+    url: "https://v1.hitokoto.cn/",
+    params: {
+      encode: "json",
+      c: ["a", "b", "c", "d", "e", "f", "g"],
+    },
   });
 };
 
