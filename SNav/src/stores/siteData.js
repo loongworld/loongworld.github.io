@@ -33,12 +33,20 @@ const useSiteDataStore = defineStore("siteData", {
   },
   actions: {
     // 启动时从云端/打包数据初始化
+    // 本地优先：云端只有本地没有的才补，绝不覆盖本地已有数据
     hydrate(data) {
       if (!data) return;
-      this.shortcutsData = data.shortcuts ?? this.shortcutsData;
-      this.categoriesData = data.categories ?? this.categoriesData;
-      this.notesData = data.notes ?? this.notesData;
-      this.recommendData = data.recommend ?? this.recommendData;
+      const merge = (local, remote) => {
+        if (!Array.isArray(remote)) return local;
+        if (!Array.isArray(local) || local.length === 0) return remote;
+        // 本地有数据时，云端只做增量补充
+        const localIds = new Set(local.map((x) => x.id));
+        return [...local, ...remote.filter((r) => !localIds.has(r.id))];
+      };
+      this.shortcutsData = merge(this.shortcutsData, data.shortcuts);
+      this.categoriesData = [...new Set([...this.categoriesData, ...(data.categories || [])])];
+      this.notesData = merge(this.notesData, data.notes);
+      this.recommendData = merge(this.recommendData, data.recommend);
     },
     // 导出给 GitHub 写入
     exportData() {
