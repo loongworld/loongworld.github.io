@@ -1,5 +1,8 @@
 import { defineStore } from "pinia";
 import defaultShortCut from "@/assets/defaultShortCut";
+import { getToken, saveData } from "@/api/github";
+
+let saveTimer = null;
 
 const useSiteDataStore = defineStore("siteData", {
   state: () => ({
@@ -20,6 +23,8 @@ const useSiteDataStore = defineStore("siteData", {
       });
       return map;
     },
+    // 兼容旧引用：categories → categoriesData
+    categories: (state) => state.categoriesData,
     // 折叠状态：默认全部展开（用分类名做 key）
     collapsedState: () => {
       const saved = localStorage.getItem("snav_collapsed");
@@ -51,6 +56,7 @@ const useSiteDataStore = defineStore("siteData", {
         name: payload.name,
         url: payload.url,
         category: payload.category || this.categoriesData[0] || "其他",
+        favorite: false,
       });
     },
     delShortcut(id) {
@@ -72,12 +78,33 @@ const useSiteDataStore = defineStore("siteData", {
     delNote(id) {
       this.notesData = this.notesData.filter((n) => n.id !== id);
     },
-    // 设置折叠
+    // 设置折叠（localStorage 持久化）
     toggleCollapse(cat) {
       const s = this.collapsedState;
       s[cat] = !s[cat];
       localStorage.setItem("snav_collapsed", JSON.stringify(s));
     },
+    // 自动保存：任何改动 debounce 写 GitHub
+    scheduleSave() {
+      if (saveTimer) clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => this.flushSave(), 2500);
+    },
+    async flushSave() {
+      const tk = getToken();
+      if (!tk) return;
+      try {
+        await saveData(this.exportData(), tk);
+        console.log("[SNav] 数据已自动同步到 GitHub");
+      } catch (e) {
+        console.error("[SNav] 自动同步失败:", e.message);
+      }
+    },
+  },
+  // 本地持久化兜底（刷新不丢）
+  persist: {
+    key: "siteData",
+    storage: window.localStorage,
+    paths: ["shortcutsData", "categoriesData", "notesData", "recommendData"],
   },
 });
 
