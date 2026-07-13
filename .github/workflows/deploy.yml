@@ -30,7 +30,7 @@ jobs:
           cache: npm
           cache-dependency-path: SNav/package-lock.json
       - name: Inject GitHub Token from Secret
-        run: echo "VITE_GITHUB_TOKEN=${{ secrets.VITE_GITHUB_TOKEN }}" > SNav/.env
+        run: echo "VITE_GITHUB_TOKEN=${{ secrets.VITE_GITHUB_TOKEN }}" > .env
       - name: Install dependencies
         run: npm install
       - name: Build
