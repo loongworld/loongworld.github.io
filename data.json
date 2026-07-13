@@ -1,1 +1,132 @@
-{"shortcuts": [], "notes": [{"id": 1, "text": "Hermes 写入测试 @ 2026-07-13T10:21:27", "ts": 1783909287}], "todos": []}
+{
+  "shortcuts": [
+    {
+      "id": 0,
+      "name": "头条",
+      "url": "https://mp.toutiao.com",
+      "category": "常用",
+      "favorite": false
+    },
+    {
+      "id": 1,
+      "name": "GitHub",
+      "url": "https://github.com/loongworld",
+      "category": "常用",
+      "favorite": false
+    },
+    {
+      "id": 2,
+      "name": "微信读书",
+      "url": "https://weread.qq.com",
+      "category": "常用",
+      "favorite": false
+    },
+    {
+      "id": 3,
+      "name": "Gitee",
+      "url": "https://gitee.com",
+      "category": "工具",
+      "favorite": false
+    },
+    {
+      "id": 4,
+      "name": "飞牛NAS",
+      "url": "http://172.22.22.1",
+      "category": "工具",
+      "favorite": false
+    },
+    {
+      "id": 5,
+      "name": "Perplexity",
+      "url": "https://perplexity.ai",
+      "category": "AI",
+      "favorite": false
+    },
+    {
+      "id": 6,
+      "name": "Cursor",
+      "url": "https://www.cursor.com",
+      "category": "AI",
+      "favorite": false
+    },
+    {
+      "id": 7,
+      "name": "HuggingFace",
+      "url": "https://huggingface.co",
+      "category": "AI",
+      "favorite": false
+    },
+    {
+      "id": 8,
+      "name": "DeepSeek",
+      "url": "https://www.deepseek.com",
+      "category": "AI",
+      "favorite": false
+    },
+    {
+      "id": 9,
+      "name": "知乎",
+      "url": "https://www.zhihu.com",
+      "category": "娱乐",
+      "favorite": false
+    },
+    {
+      "id": 10,
+      "name": "豆瓣",
+      "url": "https://book.douban.com",
+      "category": "娱乐",
+      "favorite": false
+    },
+    {
+      "id": 11,
+      "name": "B站",
+      "url": "https://www.bilibili.com",
+      "category": "娱乐",
+      "favorite": false
+    }
+  ],
+  "categories": [
+    "常用",
+    "AI",
+    "工具",
+    "娱乐"
+  ],
+  "notes": [
+    {
+      "id": 0,
+      "content": "欢迎使用记事本，点右侧便签 tab 添加/编辑",
+      "time": 1752200000000,
+      "color": "#1f2937"
+    }
+  ],
+  "recommend": [
+    {
+      "id": 0,
+      "title": "Hugging Face",
+      "desc": "全球最大开源 AI 模型社区",
+      "url": "https://huggingface.co",
+      "tag": "AI"
+    },
+    {
+      "id": 1,
+      "title": "DeepSeek",
+      "desc": "国产开源大模型，推理能力强",
+      "url": "https://www.deepseek.com",
+      "tag": "AI"
+    },
+    {
+      "id": 2,
+      "title": "Perplexity",
+      "desc": "AI 搜索引擎，回答带引用来源",
+      "url": "https://perplexity.ai",
+      "tag": "搜索"
+    },
+    {
+      "id": 3,
+      "title": "飞牛NAS社区",
+      "desc": "国产 NAS 系统交流",
+      "url": "https://www.fnnas.com",
+      "tag": "NAS"
+    }
+  ]
+}
