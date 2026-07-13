@@ -7,8 +7,11 @@ const BRANCH = "main";
 const FILE = "data.json";
 const TOKEN_KEY = "snav_admin_token";
 
-export const getToken = () =>
-  localStorage.getItem(TOKEN_KEY) || import.meta.env.VITE_GITHUB_TOKEN || "";
+export const getToken = () => {
+  // 构建时由 Actions Secret 注入 VITE_GITHUB_TOKEN（明文，仅存在于构建产物/运行期）
+  const envTok = import.meta.env.VITE_GITHUB_TOKEN || "";
+  return localStorage.getItem(TOKEN_KEY) || envTok || "";
+};
 export const setToken = (t) => localStorage.setItem(TOKEN_KEY, t);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
