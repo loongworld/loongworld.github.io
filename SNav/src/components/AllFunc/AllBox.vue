@@ -16,6 +16,18 @@
           <span class="status" :class="statusType">{{ statusText }}</span>
         </div>
 
+        <!-- GitHub Token 录入：存 localStorage，仅本机，不入仓库/dist -->
+        <div class="token-box" v-if="!hasToken">
+          <n-input
+            v-model:value="tokInput"
+            type="password"
+            size="small"
+            show-password-on="click"
+            placeholder="粘贴 GitHub Token（仅存本机，首次需填）"
+          />
+          <n-button size="small" type="primary" @click="saveToken">保存</n-button>
+        </div>
+
         <!-- 新便签输入 -->
         <div class="note-input">
           <n-input
@@ -52,7 +64,7 @@ import {
 } from "naive-ui";
 import ShortCut from "@/components/AllFunc/Box/ShortCut.vue";
 import { siteStore } from "@/stores";
-import { fetchData } from "@/api/github";
+import { fetchData, getToken, setToken } from "@/api/github";
 
 const site = siteStore();
 const notes = ref([]);
@@ -60,6 +72,26 @@ const newContent = ref("");
 const saving = ref(false);
 const statusText = ref("改动将自动保存");
 const statusType = ref("idle");
+const tokInput = ref("");
+const hasToken = ref(!!getToken());
+
+const saveToken = () => {
+  const t = tokInput.value.trim();
+  if (!t) return;
+  setToken(t);
+  hasToken.value = true;
+  tokInput.value = "";
+  statusText.value = "Token 已保存，可同步";
+  statusType.value = "ok";
+  // 保存后重新拉取云端数据
+  onMounted.length; // noop
+  fetchData().then(({ data }) => {
+    if (data) {
+      site.hydrate(data);
+      notes.value = data.notes || [];
+    }
+  }).catch(() => {});
+};
 
 onMounted(async () => {
   // 启动时拉取线上数据，云端优先
