@@ -4,85 +4,73 @@
       "id": 0,
       "name": "头条",
       "url": "https://mp.toutiao.com",
-      "category": "常用",
-      "favorite": false
+      "category": "常用"
     },
     {
       "id": 1,
       "name": "GitHub",
       "url": "https://github.com/loongworld",
-      "category": "常用",
-      "favorite": false
+      "category": "常用"
     },
     {
       "id": 2,
       "name": "微信读书",
       "url": "https://weread.qq.com",
-      "category": "常用",
-      "favorite": false
+      "category": "常用"
     },
     {
       "id": 3,
       "name": "Gitee",
       "url": "https://gitee.com",
-      "category": "工具",
-      "favorite": false
+      "category": "工具"
     },
     {
       "id": 4,
       "name": "飞牛NAS",
       "url": "http://172.22.22.1",
-      "category": "工具",
-      "favorite": false
+      "category": "工具"
     },
     {
       "id": 5,
       "name": "Perplexity",
       "url": "https://perplexity.ai",
-      "category": "AI",
-      "favorite": false
+      "category": "AI"
     },
     {
       "id": 6,
       "name": "Cursor",
       "url": "https://www.cursor.com",
-      "category": "AI",
-      "favorite": false
+      "category": "AI"
     },
     {
       "id": 7,
       "name": "HuggingFace",
       "url": "https://huggingface.co",
-      "category": "AI",
-      "favorite": false
+      "category": "AI"
     },
     {
       "id": 8,
       "name": "DeepSeek",
       "url": "https://www.deepseek.com",
-      "category": "AI",
-      "favorite": false
+      "category": "AI"
     },
     {
       "id": 9,
       "name": "知乎",
       "url": "https://www.zhihu.com",
-      "category": "娱乐",
-      "favorite": false
+      "category": "娱乐"
     },
     {
       "id": 10,
       "name": "豆瓣",
       "url": "https://book.douban.com",
-      "category": "娱乐",
-      "favorite": false
+      "category": "娱乐"
     },
     {
       "id": 11,
       "name": "B站",
       "url": "https://www.bilibili.com",
-      "category": "娱乐",
-      "favorite": false
+      "category": "娱乐"
     }
   ],
   "categories": [
@@ -92,6 +80,12 @@
     "娱乐"
   ],
   "notes": [
+    {
+      "id": 1783909509636,
+      "content": "325654",
+      "time": 1783909509636,
+      "color": ""
+    },
     {
       "id": 0,
       "content": "欢迎使用记事本，点右侧便签 tab 添加/编辑",
